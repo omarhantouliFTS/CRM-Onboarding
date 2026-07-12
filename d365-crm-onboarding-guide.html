@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Dynamics 365 CRM Learning Path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16213e;
+    --navy:#141a38;
+    --navy-2:#232f63;
+    --navy-3:#2c3a78;
+    --teal:#17b6a6;
+    --teal-dark:#0e8f82;
+    --amber:#f2a93b;
+    --paper:#f5f7fb;
+    --card:#ffffff;
+    --line:#e2e6f2;
+    --muted:#5c6480;
+    --radius:14px;
+    --font-display:'Space Grotesk','Segoe UI',sans-serif;
+    --font-body:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+    --font-mono:'IBM Plex Mono','Consolas','SFMono-Regular',monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display); line-height:1.15; margin:0 0 .5em 0;}
+  p{margin:0 0 1em 0;}
+  a{color:var(--teal-dark);}
+  img{max-width:100%; display:block; border-radius:10px;}
+  ul,ol{padding-left:1.25em;}
+  li{margin-bottom:.4em;}
+  code{font-family:var(--font-mono); font-size:.92em; background:#eef1f9; padding:.15em .4em; border-radius:5px;}
+
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px; border-radius:4px;}
+
+  /* ---------- layout shell ---------- */
+  .app-shell{display:flex; min-height:100vh;}
+
+  .sidebar{
+    width:280px; flex-shrink:0; background:linear-gradient(190deg,var(--navy),var(--navy-2));
+    color:#eef1fb; position:sticky; top:0; height:100vh; overflow-y:auto;
+    padding:26px 22px 22px; display:flex; flex-direction:column; gap:22px;
+    z-index:40;
+  }
+  .sidebar-brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{width:38px; height:38px; flex-shrink:0;}
+  .brand-text{font-family:var(--font-display); font-weight:700; font-size:1.05rem; line-height:1.2;}
+  .brand-text span{display:block; font-family:var(--font-mono); font-weight:400; font-size:.68rem; letter-spacing:.09em; text-transform:uppercase; color:#9db3e8; margin-top:2px;}
+
+  .side-nav{display:flex; flex-direction:column; gap:2px; font-size:.87rem;}
+  .side-nav a{
+    color:#c9d3ef; text-decoration:none; padding:8px 10px; border-radius:9px;
+    display:flex; align-items:center; gap:10px; transition:background .15s ease, color .15s ease;
+  }
+  .side-nav a:hover{background:rgba(255,255,255,.07); color:#fff;}
+  .side-nav a.active{background:rgba(23,182,166,.18); color:#fff;}
+  .side-nav .dot{
+    width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.25); flex-shrink:0;
+    box-shadow:0 0 0 3px rgba(255,255,255,.05);
+  }
+  .side-nav .dot.done{background:var(--teal); box-shadow:0 0 0 3px rgba(23,182,166,.25);}
+  .side-nav-label{
+    font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.1em; font-size:.66rem;
+    color:#8290bd; margin:6px 0 2px 10px;
+  }
+  .side-nav-divider{height:1px; background:rgba(255,255,255,.12); margin:8px 0;}
+
+  .reset-wrap{margin-top:auto; padding-top:10px;}
+  .ghost-btn{
+    font-family:var(--font-body); font-size:.8rem; color:#c9d3ef; background:transparent;
+    border:1px solid rgba(255,255,255,.22); padding:8px 14px; border-radius:20px; cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .ghost-btn:hover{background:rgba(255,255,255,.1); color:#fff;}
+  .ghost-btn.small{padding:5px 11px; font-size:.74rem;}
+  .reset-confirm{
+    margin-top:10px; font-size:.78rem; color:#c9d3ef; background:rgba(0,0,0,.18);
+    padding:10px; border-radius:10px; display:flex; flex-direction:column; gap:8px;
+  }
+  .reset-confirm.hidden{display:none;}
+  .reset-confirm-btns{display:flex; gap:8px;}
+
+  .mobile-topbar{display:none;}
+  .mobile-nav-toggle{
+    background:var(--navy); color:#fff; border:none; width:42px; height:42px; border-radius:10px;
+    font-size:1.2rem; cursor:pointer; flex-shrink:0;
+  }
+
+  .content{flex:1; min-width:0;}
+  .content-inner{max-width:880px; margin:0 auto; padding:0 28px 90px;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 55%,var(--navy-3) 100%);
+    color:#fff; padding:52px 28px 40px; position:relative; overflow:hidden;
+  }
+  .hero-inner{max-width:880px; margin:0 auto; position:relative; z-index:2;}
+  .hero-eyebrow{
+    font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem;
+    color:var(--teal); margin-bottom:14px; display:block;
+  }
+  .hero h1{font-size:2.3rem; max-width:14ch; margin-bottom:.3em;}
+  .hero p.lead{color:#c9d3ef; max-width:52ch; font-size:1.05rem;}
+  .hero-pipeline{width:100%; height:auto; margin:26px 0 10px; opacity:.95;}
+  .hero-progress{
+    position:fixed; top:18px; right:18px; z-index:100;
+    display:flex; align-items:center; gap:14px;
+    background:linear-gradient(135deg,var(--navy),var(--navy-2));
+    border:1px solid rgba(255,255,255,.14); border-radius:16px; padding:12px 16px; max-width:360px;
+    box-shadow:0 8px 24px rgba(20,26,56,.35);
+  }
+  .progress-ring-label{font-family:var(--font-mono); font-size:.9rem; color:#fff;}
+  .progress-ring-label small{display:block; color:#9db3e8; font-size:.72rem; margin-top:2px;}
+
+  .completion-banner{
+    max-width:880px; margin:0 auto; padding:14px 20px; background:var(--teal); color:#042f2a;
+    border-radius:12px; font-weight:600; text-align:center; position:relative; z-index:2; margin-top:18px;
+  }
+  .completion-banner.hidden{display:none;}
+
+  /* ---------- intro / how-to ---------- */
+  .intro-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 28px; margin:-28px 0 32px; position:relative; z-index:3;
+    box-shadow:0 12px 30px -18px rgba(20,26,56,.35);
+  }
+  .intro-card h2{font-size:1.15rem; margin-bottom:.6em;}
+
+  /* ---------- module cards ---------- */
+  .module{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 30px 26px; margin-bottom:22px; opacity:0; transform:translateY(14px);
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .module.revealed{opacity:1; transform:translateY(0);}
+  .module.is-complete{border-color:var(--teal);}
+  .module-head{display:flex; align-items:flex-start; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+  .module-num{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--teal-dark); background:#e6f8f6;
+    padding:4px 10px; border-radius:8px; flex-shrink:0; margin-top:4px;
+  }
+  .module-head h2{font-size:1.4rem; flex:1; min-width:200px;}
+  .badge{
+    font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:20px;
+    white-space:nowrap; margin-top:5px;
+  }
+  .module-body h3{font-size:1.05rem; margin-top:1.6em;}
+  .module-body h3:first-child{margin-top:0;}
+  .module-foot{margin-top:22px; padding-top:18px; border-top:1px solid var(--line);}
+  .complete-check{display:flex; align-items:center; gap:10px; cursor:pointer; font-size:.92rem; color:var(--muted); user-select:none;}
+  .complete-check input{width:18px; height:18px; accent-color:var(--teal); cursor:pointer;}
+  .module.is-complete .complete-check{color:var(--teal-dark); font-weight:600;}
+
+  .callout{
+    background:#fbf5e9; border-left:4px solid var(--amber); border-radius:6px;
+    padding:12px 16px; font-size:.92rem; margin:16px 0;
+  }
+  .callout strong{color:#7a5510;}
+
+  /* ---------- tables ---------- */
+  .table-wrap{overflow-x:auto; margin:16px 0;}
+  table{width:100%; border-collapse:collapse; font-size:.9rem;}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); background:#f8f9fd;}
+  tr:last-child td{border-bottom:none;}
+
+  /* ---------- code ---------- */
+  .code-block{background:#0f1530; border-radius:10px; margin:16px 0; overflow:hidden;}
+  .code-label{
+    font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em;
+    color:#8fa3d9; padding:8px 16px; border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .code-block pre{margin:0; padding:16px; overflow-x:auto;}
+  .code-block code{background:none; padding:0; color:#dce7ff; font-size:.82rem; line-height:1.55;}
+
+  /* ---------- diagrams ---------- */
+  .diagram-wrap{background:#fbfcff; border:1px solid var(--line); border-radius:12px; padding:18px; margin:18px 0; overflow-x:auto;}
+  .diagram-wrap svg{width:100%; min-width:560px; height:auto; display:block;}
+  .diagram-caption{font-size:.8rem; color:var(--muted); margin-top:10px; text-align:center;}
+  figure{margin:16px 0;}
+  figure img{border:1px solid var(--line);}
+  figcaption{font-size:.8rem; color:var(--muted); margin-top:8px;}
+
+  /* ---------- app cards grid (module 2) ---------- */
+  .card-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin:16px 0;}
+  .app-card{border:1px solid var(--line); border-radius:10px; padding:16px;}
+  .app-card h4{font-size:.98rem; margin-bottom:.4em;}
+  .app-card p{font-size:.86rem; color:var(--muted); margin-bottom:.6em;}
+  .app-card ul{font-size:.83rem; padding-left:1.1em; margin:0;}
+
+  /* ---------- glossary ---------- */
+  .glossary-tools{display:flex; flex-direction:column; gap:14px; margin-bottom:20px;}
+  .glossary-search{
+    font-family:var(--font-body); font-size:.95rem; padding:11px 16px; border-radius:10px;
+    border:1px solid var(--line); width:100%;
+  }
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    font-family:var(--font-mono); font-size:.72rem; padding:6px 13px; border-radius:20px;
+    border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer;
+  }
+  .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .term-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
+  .term-card{border:1px solid var(--line); border-radius:10px; padding:13px 15px;}
+  .term-card .term-cat{font-family:var(--font-mono); font-size:.64rem; text-transform:uppercase; letter-spacing:.07em; color:var(--teal-dark);}
+  .term-card h4{font-size:.92rem; margin:.3em 0 .3em;}
+  .term-card p{font-size:.82rem; color:var(--muted); margin:0;}
+  .no-results{color:var(--muted); font-size:.9rem; padding:20px 0; display:none;}
+
+  /* ---------- resources ---------- */
+  .resource-group{margin-bottom:22px;}
+  .resource-group h3{font-size:1rem;}
+  .resource-list{list-style:none; padding:0; margin:0;}
+  .resource-list li{
+    padding:10px 0; border-bottom:1px solid var(--line); font-size:.9rem; display:flex; gap:10px; align-items:baseline;
+  }
+  .resource-list li:last-child{border-bottom:none;}
+  .resource-list a{font-weight:600; text-decoration:none;}
+  .resource-list a:hover{text-decoration:underline;}
+  .resource-list span{color:var(--muted); font-size:.84rem;}
+
+  footer.site-footer{
+    text-align:center; padding:34px 20px 10px; color:var(--muted); font-size:.85rem;
+  }
+  footer.site-footer a{color:var(--muted);}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .sidebar{
+      position:fixed; left:-300px; top:0; width:280px; height:100vh; transition:left .25s ease; box-shadow:0 0 0 100vmax rgba(0,0,0,0);
+    }
+    .sidebar.open{left:0; box-shadow:0 0 0 100vmax rgba(10,14,30,.55);}
+    .mobile-topbar{
+      display:flex; align-items:center; gap:14px; position:sticky; top:0; z-index:30;
+      background:var(--navy); color:#fff; padding:12px 18px;
+    }
+    .mobile-topbar .mt-title{font-family:var(--font-display); font-weight:600; font-size:.95rem;}
+    .content-inner{padding:0 18px 70px;}
+    .hero{padding:36px 18px 30px;}
+    .hero h1{font-size:1.7rem;}
+    .intro-card{margin-top:-20px; padding:20px;}
+    .module{padding:22px 20px 20px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .module{transition:none; opacity:1; transform:none;}
+    .pulse-dot{display:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  @media print{
+    .sidebar,.mobile-topbar,.module-foot,.reset-wrap{display:none;}
+    .module{break-inside:avoid; box-shadow:none;}
+  }
+
+  /* ---------- exam cta ---------- */
+  .exam-cta{background:linear-gradient(135deg,#f8f9fd 0%,#eef1f9 100%);}
+  .exam-cta .module-body p{max-width:60ch;}
+  .btn{
+    font-family:var(--font-body); font-size:.95rem; font-weight:600; padding:12px 22px; border-radius:10px;
+    border:none; cursor:pointer; transition:all .15s ease; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{background:var(--teal); color:#fff;}
+  .btn-primary:hover{background:var(--teal-dark);}
+
+  /* ---------- exam-specific styles ---------- */
+  .exam-view{display:none;}
+  .exam-view.active{display:block;}
+  .guide-view{display:block;}
+  .guide-view.hidden{display:none;}
+
+  .exam-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:32px; margin:28px 0; box-shadow:0 12px 30px -18px rgba(20,26,56,.35);
+    position:relative;
+  }
+  .question-header{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .question-counter{
+    font-family:var(--font-mono); font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--muted); background:#f8f9fd; padding:6px 12px; border-radius:20px;
+  }
+  .question-text{font-size:1.15rem; font-weight:600; margin-bottom:22px;}
+  .choices{display:flex; flex-direction:column; gap:10px;}
+  .choice{
+    display:flex; align-items:flex-start; gap:12px;
+    border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+    cursor:pointer; transition:all .15s ease;
+  }
+  .choice:hover{border-color:var(--teal-dark); background:#f8fdfc;}
+  .choice.selected{border-color:var(--teal); background:#e6f8f6;}
+  .choice.correct{border-color:var(--teal); background:#e6f8f6;}
+  .choice.incorrect{border-color:#d93a3a; background:#fff5f5;}
+  .choice input[type="radio"], .choice input[type="checkbox"]{
+    width:18px; height:18px; accent-color:var(--teal); margin-top:2px; flex-shrink:0;
+  }
+  .choice-label{font-size:.96rem; line-height:1.45;}
+  .matching-row{display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;}
+  .matching-term{flex:1; min-width:140px; font-weight:600; font-size:.95rem;}
+  .matching-select{
+    flex:1; min-width:180px; font-family:var(--font-body); font-size:.95rem;
+    padding:10px 12px; border-radius:8px; border:1px solid var(--line); background:#fff;
+  }
+  .matching-select.correct{border-color:var(--teal); background:#e6f8f6;}
+  .matching-select.incorrect{border-color:#d93a3a; background:#fff5f5;}
+  .nav-btns{
+    display:flex; justify-content:space-between; align-items:center; margin-top:28px; gap:12px;
+  }
+  .btn-exam{
+    font-family:var(--font-body); font-size:.95rem; font-weight:600; padding:12px 22px; border-radius:10px;
+    border:none; cursor:pointer; transition:all .15s ease; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-exam-primary{background:var(--teal); color:#fff;}
+  .btn-exam-primary:hover{background:var(--teal-dark);}
+  .btn-exam-secondary{background:#eef1f9; color:var(--ink);}
+  .btn-exam-secondary:hover{background:#e2e6f2;}
+  .btn-exam:disabled{opacity:.5; cursor:not-allowed;}
+  .results-hero{text-align:center; padding:40px 20px;}
+  .score-ring-wrap{width:140px; height:140px; margin:0 auto 24px; position:relative;}
+  .score-ring-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
+  .score-text{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:700;
+  }
+  .score-pct{font-size:2rem; line-height:1;}
+  .score-label{font-family:var(--font-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-top:4px;}
+  .pass-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:.8rem; text-transform:uppercase; letter-spacing:.06em;
+    padding:8px 16px; border-radius:20px; margin-bottom:16px;
+  }
+  .pass-badge.pass{background:#e6f8f6; color:var(--teal-dark);}
+  .pass-badge.fail{background:#fff5f5; color:#b42318;}
+  .review-item{border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:12px;}
+  .review-item.correct{border-left:4px solid var(--teal);}
+  .review-item.incorrect{border-left:4px solid #d93a3a;}
+  .review-status{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px;}
+  .review-answer{font-size:.9rem; color:var(--muted);}
+  .confetti{position:fixed; inset:0; pointer-events:none; z-index:200; overflow:hidden;}
+  .confetti-piece{
+    position:absolute; width:10px; height:10px; background:var(--teal); opacity:0;
+    animation:confetti-fall 2.5s ease-out forwards;
+  }
+  @keyframes confetti-fall{
+    0%{transform:translateY(-20px) rotate(0deg); opacity:1;}
+    100%{transform:translateY(100vh) rotate(720deg); opacity:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <svg class="brand-mark" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="29" r="5" fill="var(--teal)"/>
+        <circle cx="19" cy="9" r="5" fill="var(--amber)"/>
+        <circle cx="30" cy="29" r="5" fill="var(--teal)"/>
+        <path d="M8 29 L19 9 L30 29" stroke="#8fa3d9" stroke-width="2" fill="none"/>
+      </svg>
+      <div class="brand-text">CRM Onboarding<span>Dynamics 365 Path</span></div>
+    </div>
+
+    <nav class="side-nav" aria-label="Module navigation">
+      <span class="side-nav-label">Foundations</span>
+      <a href="#module-1" data-module="1"><span class="dot"></span>1. Power Platform &amp; Dataverse</a>
+      <a href="#module-2" data-module="2"><span class="dot"></span>2. Meet the D365 apps</a>
+
+      <span class="side-nav-label">Core concepts</span>
+      <a href="#module-3" data-module="3"><span class="dot"></span>3. Entities &amp; relationships</a>
+      <a href="#module-4" data-module="4"><span class="dot"></span>4. Forms &amp; views</a>
+      <a href="#module-5" data-module="5"><span class="dot"></span>5. Business rules &amp; BPFs</a>
+
+      <span class="side-nav-label">Customization &amp; code</span>
+      <a href="#module-6" data-module="6"><span class="dot"></span>6. Scripts vs. plugins</a>
+      <a href="#module-7" data-module="7"><span class="dot"></span>7. Plugin deep dive</a>
+      <a href="#module-8" data-module="8"><span class="dot"></span>8. Ribbon customization</a>
+
+      <span class="side-nav-label">Automation &amp; reporting</span>
+      <a href="#module-9" data-module="9"><span class="dot"></span>9. Power Automate</a>
+      <a href="#module-10" data-module="10"><span class="dot"></span>10. Power BI</a>
+
+      <span class="side-nav-label">Applications &amp; tools</span>
+      <a href="#module-11" data-module="11"><span class="dot"></span>11. Project Operations</a>
+      <a href="#module-12" data-module="12"><span class="dot"></span>12. Everyday tools</a>
+
+      <div class="side-nav-divider"></div>
+      <a href="#glossary">Glossary of terms</a>
+      <a href="#resources">Official resources</a>
+    </nav>
+
+    <div class="reset-wrap">
+      <button class="ghost-btn" id="resetProgressBtn" type="button">Reset progress</button>
+      <div class="reset-confirm hidden" id="resetConfirm">
+        <span>Clear every checkmark? This can't be undone.</span>
+        <div class="reset-confirm-btns">
+          <button class="ghost-btn small" id="resetYes" type="button">Yes, reset</button>
+          <button class="ghost-btn small" id="resetNo" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="content">
+
+    <div class="mobile-topbar">
+      <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open module navigation">&#9776;</button>
+      <span class="mt-title">CRM Onboarding</span>
+    </div>
+
+    <header class="hero">
+      <div class="hero-inner">
+        <span class="hero-eyebrow">Internal training guide &middot; Dynamics 365 CRM team</span>
+        <h1>Your Dynamics 365 CRM Learning Path</h1>
+        <p class="lead">A practical route through Dataverse, the core CRM entities, customization, and the tools you'll reach for every day &mdash; paced by you, tracked as you go.</p>
+
+        <svg class="hero-pipeline" viewBox="0 0 900 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path id="pulsePath" d="M20,80 C120,20 180,95 280,55 C380,15 420,90 520,50 C620,10 660,85 760,45 C800,30 830,40 880,30" stroke="rgba(255,255,255,.22)" stroke-width="2" fill="none"/>
+          <circle cx="20" cy="80" r="6" fill="var(--teal)"/>
+          <circle cx="280" cy="55" r="6" fill="var(--amber)"/>
+          <circle cx="520" cy="50" r="6" fill="var(--teal)"/>
+          <circle cx="760" cy="45" r="6" fill="var(--amber)"/>
+          <circle cx="880" cy="30" r="7" fill="#fff"/>
+          <circle r="5" fill="#fff" class="pulse-dot">
+            <animateMotion dur="7s" repeatCount="indefinite" path="M20,80 C120,20 180,95 280,55 C380,15 420,90 520,50 C620,10 660,85 760,45 C800,30 830,40 880,30"/>
+          </circle>
+        </svg>
+
+        <div class="hero-progress" id="guideProgress">
+          <svg width="64" height="64" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.18)" stroke-width="10" fill="none"/>
+              <circle id="progressRingFg" cx="60" cy="60" r="52" stroke="var(--teal)" stroke-width="10" fill="none"
+                stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+                transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="progress-ring-label" id="progressLabel">0 / 12 modules &middot; 0%<small>Saved automatically as you go</small></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-inner guide-view" id="guideView">
+
+      <div class="completion-banner hidden" id="completionBanner">
+        🎉 All 12 modules checked off &mdash; you've covered the full path. Ask your mentor what to shadow next.
+      </div>
+
+      <section class="intro-card">
+        <h2>How to use this guide</h2>
+        <p>Work through the modules in order down the left &mdash; each one leans on the last. Read the explanation, look at the diagrams and screenshots, and follow a linked Microsoft Learn article when you want to go deeper. Once you're comfortable with a module, check it off at the bottom of the section; your progress is saved automatically and picks up again next time you open this guide.</p>
+        <p>The badge on each module tells you what <em>kind</em> of topic it is, not how hard it is: <strong>Foundational</strong> and <strong>Core concept</strong> modules are things every CRM team member uses daily; <strong>Developer topic</strong> modules go deeper into code. If anything here doesn't match what you see on screen, that's normal &mdash; Dynamics 365 is customized per organization, so ask your mentor to show you the real thing next to this guide.</p>
+      </section>
+
+      <!-- ================= MODULE 1 ================= -->
+      <section class="module" id="module-1" data-module-id="1">
+        <div class="module-head">
+          <span class="module-num">01</span>
+          <h2>Power Platform &amp; Dataverse foundations</h2>
+          <span class="badge">Foundational</span>
+        </div>
+        <div class="module-body">
+          <p>Everything you'll touch in Dynamics 365 sits on top of one shared foundation: the Power Platform. Get comfortable with these pieces first &mdash; you'll see all of them again in every later module.</p>
+
+          <h3>The platform, at a glance</h3>
+          <p>Five products share the same underlying data platform:</p>
+          <ul>
+            <li><strong>Power Apps</strong> &mdash; build canvas apps or model-driven apps (Dynamics 365 itself is a set of model-driven apps).</li>
+            <li><strong>Power Automate</strong> &mdash; automate workflows with triggers and actions.</li>
+            <li><strong>Power BI</strong> &mdash; build reports and dashboards for analysis.</li>
+            <li><strong>Power Pages</strong> &mdash; publish external-facing websites backed by the same data.</li>
+            <li><strong>Copilot Studio</strong> &mdash; build conversational AI agents.</li>
+          </ul>
+
+          <h3>What is Dataverse?</h3>
+          <p>Dataverse is the secure, cloud-based data platform underneath all of it. Data lives in <strong>tables</strong> (rows and columns &mdash; you'll also hear the older terms <em>entity</em>, <em>record</em>, and <em>field</em>, which still show up throughout code and older documentation). Dataverse also carries the security model, business logic, and storage, so every app that reads from it behaves consistently.</p>
+
+          <figure>
+            <img src="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/media/data-platform-cds-intro/platform.png" alt="Diagram showing Microsoft Power Platform overview: Power Apps, Power Automate, Power BI, and Power Pages all connected to Microsoft Dataverse." loading="lazy">
+            <figcaption>How the Power Platform apps sit on top of Dataverse. Source: Microsoft Learn.</figcaption>
+          </figure>
+
+          <p>Why teams rely on it instead of a bespoke database: it's easy to manage (metadata and data both live in the cloud), easy to secure (role-based access down to the row and column), rich in metadata (relationships are first-class, not an afterthought), and it comes with built-in logic and validation &mdash; calculated columns, business rules, and business process flows &mdash; so you rarely start from a blank slate.</p>
+
+          <h3>Environments</h3>
+          <p>An <strong>environment</strong> is an isolated space that holds its own apps, flows, and Dataverse database &mdash; typically one each for development, testing, and production. Treat environments as separate rooms: what you build in dev doesn't touch production until you deliberately move it there.</p>
+
+          <h3>Solutions</h3>
+          <p>A <strong>solution</strong> is a package of customizations &mdash; tables, forms, plugins, flows, and more &mdash; that you move between environments as a single unit. An <strong>unmanaged</strong> solution is editable and used while you build; a <strong>managed</strong> solution is locked and meant for production, so you import it rather than edit it directly.</p>
+
+          <div class="callout"><strong>Watch for this:</strong> "entity" and "table" mean the same thing, and so do "field"/"column" and "record"/"row". Microsoft renamed these in 2020, but code, error messages, and a lot of blog posts still use the old names.</div>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/data-platform-intro" target="_blank" rel="noopener">Learn more: What is Microsoft Dataverse? (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="1"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 2 ================= -->
+      <section class="module" id="module-2" data-module-id="2">
+        <div class="module-head">
+          <span class="module-num">02</span>
+          <h2>Meet the Dynamics 365 apps</h2>
+          <span class="badge">Foundational</span>
+        </div>
+        <div class="module-body">
+          <p>"Dynamics 365" isn't one app &mdash; it's a family of model-driven apps built on Dataverse, each aimed at a different part of the business. You'll most often work in Sales, but you should recognize all five.</p>
+
+          <div class="card-grid">
+            <div class="app-card">
+              <h4>Sales</h4>
+              <p>Manages the sales process end to end, from lead to closed deal.</p>
+              <ul><li>Lead &amp; opportunity management</li><li>Pipeline tracking &amp; forecasting</li><li>Integrated customer insights</li></ul>
+            </div>
+            <div class="app-card">
+              <h4>Customer Service</h4>
+              <p>Runs support cases, SLAs, and customer interactions.</p>
+              <ul><li>Case management</li><li>Omnichannel (chat, email, social)</li><li>Knowledge base &amp; self-service</li></ul>
+            </div>
+            <div class="app-card">
+              <h4>Field Service</h4>
+              <p>Schedules and tracks onsite technicians and resources.</p>
+              <ul><li>Work order management</li><li>Resource scheduling</li><li>Mobile &amp; mixed-reality support</li></ul>
+            </div>
+            <div class="app-card">
+              <h4>ClickDimensions</h4>
+              <p>Runs campaigns and nurtures leads through email, forms, and journeys.</p>
+              <ul><li>Multichannel campaigns</li><li>Lead scoring</li><li>Customer journey orchestration</li></ul>
+            </div>
+            <div class="app-card">
+              <h4>Project Operations</h4>
+              <p>Runs project-based business from quote to invoice &mdash; covered fully in Module 11.</p>
+              <ul><li>Project planning &amp; resourcing</li><li>Time &amp; expense tracking</li><li>Project financials</li></ul>
+            </div>
+          </div>
+
+          <h3>Canvas apps, model-driven apps, and Power Pages</h3>
+          <p>All Dynamics 365 apps are <strong>model-driven</strong>: the data model drives the layout automatically. That's different from a <strong>canvas app</strong>, which you design freely, or <strong>Power Pages</strong>, which publishes a website for people outside your organization.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Consideration</th><th>Canvas app</th><th>Model-driven app</th></tr>
+              <tr><td>Data source</td><td>Any connector, doesn't need Dataverse</td><td>Dataverse only</td></tr>
+              <tr><td>Best for</td><td>A specific task or screen</td><td>Back-office / full business process</td></tr>
+              <tr><td>UI</td><td>Fully custom, drag-and-drop</td><td>Responsive, generated from your data model</td></tr>
+              <tr><td>Typical example</td><td>A field tech's photo-and-notes app</td><td>Dynamics 365 Sales itself</td></tr>
+            </table>
+          </div>
+
+          <p><a href="https://learn.microsoft.com/en-us/dynamics365/sales/" target="_blank" rel="noopener">Learn more: Dynamics 365 Sales documentation (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="2"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 3 ================= -->
+      <section class="module" id="module-3" data-module-id="3">
+        <div class="module-head">
+          <span class="module-num">03</span>
+          <h2>Core CRM entities &amp; relationships</h2>
+          <span class="badge">Core concept</span>
+        </div>
+        <div class="module-body">
+          <p>Almost every CRM conversation comes back to a handful of core tables. Learn these well: you'll query, customize, and troubleshoot them constantly.</p>
+
+          <ul>
+            <li><strong>Account</strong> &mdash; a company or organization you deal with.</li>
+            <li><strong>Contact</strong> &mdash; an individual person, often linked to an Account.</li>
+            <li><strong>Lead</strong> &mdash; an unqualified prospect, not yet vetted as a real deal.</li>
+            <li><strong>Opportunity</strong> &mdash; a qualified, in-progress deal.</li>
+            <li><strong>Campaign</strong> &mdash; a marketing effort aimed at a target audience.</li>
+            <li><strong>Case</strong> &mdash; a customer service issue that needs resolving.</li>
+            <li><strong>Activity</strong> &mdash; a logged interaction: email, call, task, or appointment.</li>
+            <li><strong>Product</strong> &mdash; an item or service you sell.</li>
+          </ul>
+
+          <div class="callout"><strong>Lookup fields:</strong> most of the connections below are built from lookup fields &mdash; a column on one table that points at a row on another. Once you can spot a lookup on a form, you can trace how any two tables relate.</div>
+
+          <h3>How they connect</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of Account, Contact, Lead, Opportunity, Campaign, Case, and Product relationships">
+              <g font-family="IBM Plex Sans, sans-serif" font-size="14">
+                <line x1="150" y1="60" x2="330" y2="60" stroke="#c7cee6" stroke-width="2"/>
+                <text x="200" y="52" fill="#5c6480" font-size="11">generates</text>
+
+                <line x1="330" y1="80" x2="330" y2="150" stroke="#c7cee6" stroke-width="2"/>
+                <text x="336" y="118" fill="#5c6480" font-size="11">converts to</text>
+
+                <line x1="410" y1="170" x2="560" y2="170" stroke="#c7cee6" stroke-width="2"/>
+                <text x="440" y="163" fill="#5c6480" font-size="11">tied to</text>
+
+                <line x1="620" y1="190" x2="620" y2="255" stroke="#c7cee6" stroke-width="2"/>
+                <text x="626" y="225" fill="#5c6480" font-size="11">employs</text>
+
+                <line x1="560" y1="190" x2="470" y2="255" stroke="#c7cee6" stroke-width="2"/>
+                <text x="470" y="230" fill="#5c6480" font-size="11">raises</text>
+
+                <line x1="330" y1="190" x2="330" y2="255" stroke="#c7cee6" stroke-width="2"/>
+                <text x="336" y="225" fill="#5c6480" font-size="11">sold on</text>
+
+                <line x1="620" y1="255" x2="470" y2="285" stroke="#c7cee6" stroke-width="2" stroke-dasharray="4 4"/>
+
+                <rect x="60" y="35" width="130" height="50" rx="10" fill="#fbf5e9" stroke="var(--amber)"/>
+                <text x="125" y="65" text-anchor="middle" fill="#16213e" font-weight="600">Campaign</text>
+
+                <rect x="270" y="35" width="120" height="50" rx="10" fill="#e6f8f6" stroke="var(--teal)"/>
+                <text x="330" y="65" text-anchor="middle" fill="#16213e" font-weight="600">Lead</text>
+
+                <rect x="270" y="150" width="140" height="50" rx="10" fill="#e6f8f6" stroke="var(--teal)"/>
+                <text x="340" y="180" text-anchor="middle" fill="#16213e" font-weight="600">Opportunity</text>
+
+                <rect x="555" y="150" width="130" height="50" rx="10" fill="#eef1f9" stroke="#b9c2e0"/>
+                <text x="620" y="180" text-anchor="middle" fill="#16213e" font-weight="600">Account</text>
+
+                <rect x="555" y="255" width="130" height="50" rx="10" fill="#eef1f9" stroke="#b9c2e0"/>
+                <text x="620" y="285" text-anchor="middle" fill="#16213e" font-weight="600">Contact</text>
+
+                <rect x="405" y="255" width="120" height="50" rx="10" fill="#fdeee6" stroke="#e08a4f"/>
+                <text x="465" y="285" text-anchor="middle" fill="#16213e" font-weight="600">Case</text>
+
+                <rect x="270" y="255" width="120" height="50" rx="10" fill="#eef1f9" stroke="#b9c2e0"/>
+                <text x="330" y="285" text-anchor="middle" fill="#16213e" font-weight="600">Product</text>
+              </g>
+            </svg>
+            <p class="diagram-caption">A simplified map of how the core entities relate. Solid lines are direct relationships; the dashed line shows Case can also trace back to Account through Contact.</p>
+          </div>
+
+          <h3>From Lead to Opportunity</h3>
+          <p>A Lead moves through recognizable stages before it becomes a real deal:</p>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 860 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lead to Opportunity stages: New, MQL, SQL, Qualify, Discovery, Proposal, Negotiate, Verbal">
+              <line x1="45" y1="35" x2="815" y2="35" stroke="#c7cee6" stroke-width="2"/>
+              <g font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="#16213e" text-anchor="middle">
+                <circle cx="45" cy="35" r="9" fill="var(--teal)"/><text x="45" y="62">New</text>
+                <circle cx="155" cy="35" r="9" fill="var(--teal)"/><text x="155" y="62">MQL</text>
+                <circle cx="265" cy="35" r="9" fill="var(--teal)"/><text x="265" y="62">SQL</text>
+                <circle cx="375" cy="35" r="9" fill="var(--amber)"/><text x="375" y="62">Qualify</text>
+                <circle cx="485" cy="35" r="9" fill="var(--amber)"/><text x="485" y="62">Discovery</text>
+                <circle cx="595" cy="35" r="9" fill="var(--amber)"/><text x="595" y="62">Proposal</text>
+                <circle cx="705" cy="35" r="9" fill="var(--amber)"/><text x="705" y="62">Negotiate</text>
+                <circle cx="815" cy="35" r="9" fill="var(--amber)"/><text x="815" y="62">Verbal</text>
+              </g>
+              <text x="45" y="95" font-size="10.5" fill="#5c6480">Lead stages</text>
+              <text x="375" y="95" font-size="10.5" fill="#5c6480">Opportunity stages, once qualified</text>
+            </svg>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <tr><th>Happens automatically</th><th>You do this manually</th></tr>
+              <tr><td>Lead converts into an Opportunity (plus an Account and/or Contact if they don't exist yet)</td><td>Update Opportunity fields: estimated revenue, close date, sales stage</td></tr>
+              <tr><td>Linked Competitors carry over to the new Opportunity</td><td>Reach out to the Contact and keep building the relationship</td></tr>
+              <tr><td>The new Opportunity enters the sales pipeline</td><td>Add Products from the catalog and prepare a Quote</td></tr>
+              <tr><td>&nbsp;</td><td>Log Activities (calls, meetings, tasks) as you work the deal</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="3"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 4 ================= -->
+      <section class="module" id="module-4" data-module-id="4">
+        <div class="module-head">
+          <span class="module-num">04</span>
+          <h2>Working with forms &amp; views</h2>
+          <span class="badge">Core concept</span>
+        </div>
+        <div class="module-body">
+          <p>A <strong>form</strong> shows one record; a <strong>view</strong> shows a list of them. You'll spend most of your day moving between the two.</p>
+
+          <h3>Form types</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Form type</th><th>Custom components</th><th>Use it for</th></tr>
+              <tr><td>Main form</td><td>Full &mdash; PCF, JavaScript, business rules</td><td>The full record: viewing, editing, everyday work</td></tr>
+              <tr><td>Quick Create</td><td>Limited &mdash; basic fields &amp; business rules</td><td>Fast entry from a side panel without leaving your place</td></tr>
+              <tr><td>Quick View</td><td>Limited, read-only</td><td>Showing fields from a related record inline</td></tr>
+              <tr><td>Card form</td><td>Not customizable</td><td>Mobile or space-limited layouts</td></tr>
+            </table>
+          </div>
+
+          <h3>What <code>getFormType()</code> tells you</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Value</th><th>Mode</th><th>Meaning</th></tr>
+              <tr><td>0</td><td>Undefined</td><td>Form type not set</td></tr>
+              <tr><td>1</td><td>Create</td><td>You're creating a new record</td></tr>
+              <tr><td>2</td><td>Update</td><td>You're editing an existing record</td></tr>
+              <tr><td>3</td><td>Read-Only</td><td>Viewing only</td></tr>
+              <tr><td>4</td><td>Disabled</td><td>The form is disabled</td></tr>
+              <tr><td>6</td><td>Bulk Edit</td><td>Editing several records at once</td></tr>
+            </table>
+          </div>
+          <div class="callout"><strong>Gotcha:</strong> if you create a record from inside a parent (say, a new Invoice under a Project Contract), Dynamics 365 sometimes pre-saves it to set up the relationship. The form still looks brand new to you, but <code>getFormType()</code> can already report <strong>2 (Update)</strong> because the row technically exists. Check the URL for an ID if the form type surprises you.</div>
+
+          <h3>Views</h3>
+          <p>A <strong>public view</strong> is shared with everyone who has access to the table; a <strong>personal view</strong> is yours alone, for your own filters and columns. A <strong>subgrid</strong> is a form control that shows a filtered list of related records without leaving the current page &mdash; for example, an Account's open Opportunities shown right on the Account form.</p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="4"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 5 ================= -->
+      <section class="module" id="module-5" data-module-id="5">
+        <div class="module-head">
+          <span class="module-num">05</span>
+          <h2>Business rules &amp; business process flows</h2>
+          <span class="badge">Core concept</span>
+        </div>
+        <div class="module-body">
+          <p>Before you ever reach for JavaScript, check whether a no-code option already covers what you need. These two are your first stop.</p>
+
+          <h3>Business rules</h3>
+          <p>A <strong>business rule</strong> validates data, shows or hides a column, sets a requirement level, or sets a value &mdash; without writing code. Scope it to the whole table and it runs both on the form <em>and</em> on the server, so it applies no matter how the data comes in.</p>
+          <p><em>Example:</em> require a "Credit Limit Approver" only when Credit Limit is set above $1,000,000. Below that, the field stays optional.</p>
+          <figure>
+            <img src="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/media/data-platform-cds-create-business-rule/add-condition-business-rule.png" alt="The business rule designer showing a condition being added to a business rule." loading="lazy">
+            <figcaption>Adding a condition inside the business rule designer. Source: Microsoft Learn.</figcaption>
+          </figure>
+
+          <h3>Business process flows (BPFs)</h3>
+          <p>A <strong>business process flow</strong> guides a user through a defined set of <strong>stages</strong>, shown as a bar across the top of the form. Each stage groups the columns someone should fill in before clicking <strong>Next Stage</strong>. The classic example is Lead to Opportunity to Quote to Order to Invoice.</p>
+          <figure>
+            <img src="https://learn.microsoft.com/en-us/power-automate/media/business-process-stages.png" alt="A business process flow bar across the top of a form, showing stages a user moves through." loading="lazy">
+            <figcaption>A business process flow bar with stages. Source: Microsoft Learn.</figcaption>
+          </figure>
+          <ul>
+            <li>By default, only <strong>System Administrator</strong> and <strong>System Customizer</strong> roles can edit a BPF's design &mdash; and each user only sees the BPFs their security role grants them.</li>
+            <li>A single BPF can span up to five different tables, and a table can have up to ten active BPFs, filtered by security role.</li>
+            <li>Conditions inside a BPF can branch up to five levels deep.</li>
+          </ul>
+
+          <h3>Locking a stage against manual changes</h3>
+          <p>Sometimes a stage should only move forward through automation (a scoring model, a plugin, a flow) and never by a user dragging it. You can intercept the change client-side:</p>
+          <div class="code-block">
+            <div class="code-label">JavaScript &middot; form web resource</div>
+            <pre><code>var LeadSdk = window.LeadSdk || {};
+(function () {
+    this.formOnLoad = function (executionContext) {
+        var formContext = executionContext.getFormContext();
+        formContext.data.process.addOnPreStageChange(LeadSdk.formEvents.handleStageMovement);
+    };
+
+    LeadSdk.formEvents = {
+        handleStageMovement: function (executionContext) {
+            var formContext = executionContext.getFormContext();
+            var bpfArgs = executionContext.getEventArgs();
+            bpfArgs.preventDefault();
+
+            var message = 'This stage is controlled automatically and cannot be changed manually.';
+            formContext.ui.setFormNotification(message, 'WARNING', 'lockedBpf');
+        }
+    };
+}).call(LeadSdk);</code></pre>
+          </div>
+          <p><a href="https://learn.microsoft.com/en-us/power-automate/business-process-flows-overview" target="_blank" rel="noopener">Learn more: Business process flows overview (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/data-platform-create-business-rule" target="_blank" rel="noopener">Create a business rule (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="5"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 6 ================= -->
+      <section class="module" id="module-6" data-module-id="6">
+        <div class="module-head">
+          <span class="module-num">06</span>
+          <h2>Customizing D365: scripts vs. plugins</h2>
+          <span class="badge">Customization</span>
+        </div>
+        <div class="module-body">
+          <p>Once business rules and BPFs aren't enough, you have two code-based options &mdash; and they solve very different problems.</p>
+
+          <div class="table-wrap">
+            <table>
+              <tr><th>Aspect</th><th>Scripts (JavaScript)</th><th>Plugins (C# / .NET)</th></tr>
+              <tr><td>Runs on</td><td>Client-side, in the browser</td><td>Server-side, on Dataverse</td></tr>
+              <tr><td>Triggers on</td><td>Form events (load, save, change)</td><td>Database events (create, update, delete)</td></tr>
+              <tr><td>Applies to</td><td>That form, in that browser session</td><td>All data entry: UI, imports, integrations</td></tr>
+              <tr><td>Best for</td><td>Field validation, dynamic show/hide, UI polish</td><td>Business logic that must always apply, automation, integrations</td></tr>
+            </table>
+          </div>
+          <p>A useful rule of thumb: reach for a script when you're improving the <em>experience</em> of filling out a form; reach for a plugin when the rule must hold true no matter how the record was changed.</p>
+
+          <h3>Display rule vs. enable rule</h3>
+          <p>These same two flavors show up again when customizing ribbon buttons:</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Aspect</th><th>Display rule</th><th>Enable rule</th></tr>
+              <tr><td>Evaluated</td><td>Once, when the form or grid loads</td><td>Re-evaluated as fields change on the form</td></tr>
+              <tr><td>Controls</td><td>Whether the button shows up at all</td><td>Whether a visible button is clickable</td></tr>
+              <tr><td>Needs a refresh to update?</td><td>Yes</td><td>No &mdash; updates live</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="6"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 7 ================= -->
+      <section class="module" id="module-7" data-module-id="7">
+        <div class="module-head">
+          <span class="module-num">07</span>
+          <h2>Plugin development deep dive</h2>
+          <span class="badge">Developer topic</span>
+        </div>
+        <div class="module-body">
+          <p>A <strong>plugin</strong> is a custom event handler: a compiled class in a <strong>plugin assembly</strong> (a .dll) that runs when a specific table and message combination is processed by Dataverse.</p>
+
+          <h3>How a plugin gets called</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plugin execution flow: Dataverse event, execution pipeline, IServiceProvider, IPluginExecutionContext, your plugin logic">
+              <g font-family="IBM Plex Sans, sans-serif" font-size="13.5" text-anchor="middle">
+                <rect x="190" y="10" width="260" height="42" rx="9" fill="#e6f8f6" stroke="var(--teal)"/>
+                <text x="320" y="35" fill="#16213e" font-weight="600">Dataverse event (e.g. Update)</text>
+                <line x1="320" y1="52" x2="320" y2="68" stroke="#c7cee6" stroke-width="2"/>
+
+                <rect x="150" y="68" width="340" height="42" rx="9" fill="#fff" stroke="#b9c2e0"/>
+                <text x="320" y="93" fill="#16213e" font-weight="600">Event execution pipeline</text>
+                <line x1="320" y1="110" x2="320" y2="126" stroke="#c7cee6" stroke-width="2"/>
+
+                <rect x="180" y="126" width="280" height="42" rx="9" fill="#fff" stroke="#b9c2e0"/>
+                <text x="320" y="151" fill="#16213e" font-weight="600">IServiceProvider</text>
+                <line x1="320" y1="168" x2="320" y2="184" stroke="#c7cee6" stroke-width="2"/>
+
+                <rect x="150" y="184" width="340" height="42" rx="9" fill="#fff" stroke="#b9c2e0"/>
+                <text x="320" y="209" fill="#16213e" font-weight="600">IPluginExecutionContext</text>
+                <line x1="320" y1="226" x2="320" y2="242" stroke="#c7cee6" stroke-width="2"/>
+
+                <rect x="170" y="242" width="300" height="42" rx="9" fill="#fdeee6" stroke="#e08a4f"/>
+                <text x="320" y="267" fill="#16213e" font-weight="600">Your plugin logic (Execute method)</text>
+              </g>
+            </svg>
+            <p class="diagram-caption">The Execute method on your plugin class receives an IServiceProvider, which hands you the context, tracing service, and organization service.</p>
+          </div>
+
+          <h3>Where in the pipeline it runs</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 820 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pipeline stages: pre-validation, pre-operation, main operation, post-operation">
+              <line x1="60" y1="45" x2="760" y2="45" stroke="#c7cee6" stroke-width="2"/>
+              <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" text-anchor="middle" fill="#16213e">
+                <circle cx="60" cy="45" r="10" fill="var(--teal)"/><text x="60" y="76">Pre-validation (10)</text>
+                <circle cx="290" cy="45" r="10" fill="var(--teal)"/><text x="290" y="76">Pre-operation (20)</text>
+                <rect x="440" y="25" width="140" height="40" rx="8" fill="#fdeee6" stroke="#e08a4f"/><text x="510" y="50">Main operation</text>
+                <circle cx="760" cy="45" r="10" fill="var(--amber)"/><text x="720" y="76">Post-operation (40)</text>
+              </g>
+              <text x="700" y="105" font-size="11" fill="#5c6480" text-anchor="middle">Sync = user waits &middot; Async = queued in the background</text>
+            </svg>
+          </div>
+
+          <h3>Key interfaces you'll use</h3>
+          <ul>
+            <li><strong>IServiceProvider</strong> &mdash; the entry point; you pull everything else out of it.</li>
+            <li><strong>IOrganizationServiceFactory</strong> / <strong>IOrganizationService</strong> &mdash; create/retrieve/update/delete records from your plugin.</li>
+            <li><strong>IPluginExecutionContext</strong> &mdash; carries <code>InputParameters</code>, <code>OutputParameters</code>, <code>MessageName</code>, <code>PrimaryEntityName</code>, <code>Stage</code>, <code>Mode</code>, <code>Depth</code>, <code>UserId</code>, entity images, and more.</li>
+            <li><strong>ITracingService</strong> &mdash; your main debugging tool. Trace messages land in the Plug-in Trace Log, since you can't attach a live debugger to most sandboxed plugins.</li>
+          </ul>
+
+          <h3>Target, pre-image, and post-image</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Term</th><th>What it is</th><th>Typical use</th></tr>
+              <tr><td>Target</td><td>The data that triggered the plugin (an Entity for Create/Update, an EntityReference for Delete)</td><td>Reading the new values being set</td></tr>
+              <tr><td>Pre-Image</td><td>A snapshot of the row before the operation</td><td>Comparing old vs. new values on an update</td></tr>
+              <tr><td>Post-Image</td><td>A snapshot of the row after the operation</td><td>Using the final values in a follow-up action</td></tr>
+            </table>
+          </div>
+
+          <h3>Registering a step</h3>
+          <p>When you register a plugin, you're telling Dataverse exactly when to call it:</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Field</th><th>What it controls</th></tr>
+              <tr><td>Message</td><td>The operation that fires the plugin &mdash; Create, Update, Delete, Associate, or a custom action</td></tr>
+              <tr><td>Primary / Secondary entity</td><td>Which table (and, for two-table messages like Associate, the second table)</td></tr>
+              <tr><td>Filtering attributes</td><td>On Update, only fire when one of these specific columns changes &mdash; keeps unnecessary runs down</td></tr>
+              <tr><td>Execution order</td><td>Controls run order when several plugins share the same stage, table, and message</td></tr>
+              <tr><td>Deployment</td><td>Server (the default, always applies) or Offline (legacy Outlook client)</td></tr>
+              <tr><td>Unsecure configuration</td><td>Plain-text string passed to the plugin &mdash; visible to anyone with access to the step</td></tr>
+              <tr><td>Secure configuration</td><td>Encrypted string, visible only to the user who registered it or an admin &mdash; use this for secrets</td></tr>
+            </table>
+          </div>
+
+          <figure>
+            <img src="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/media/dv_plugin_registration_tool.png" alt="The Plug-in Registration Tool main window, showing registered assemblies and steps." loading="lazy">
+            <figcaption>The Plug-in Registration Tool. Source: Microsoft Learn.</figcaption>
+          </figure>
+
+          <h3>A simple, complete example</h3>
+          <p>A post-operation plugin on Account's Delete message that removes related custom records:</p>
+          <div class="code-block">
+            <div class="code-label">C# &middot; plugin class</div>
+            <pre><code>public void Execute(IServiceProvider serviceProvider)
+{
+    var context = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
+    var serviceFactory = (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
+    var service = serviceFactory.CreateOrganizationService(context.UserId);
+
+    if (context.InputParameters.Contains("Target") && context.InputParameters["Target"] is EntityReference targetEntity)
+    {
+        if (targetEntity.LogicalName != "account")
+            return;
+
+        var query = new QueryExpression("new_relatedrecord")
+        {
+            ColumnSet = new ColumnSet(false),
+            Criteria = new FilterExpression
+            {
+                Conditions =
+                {
+                    new ConditionExpression("new_accountid", ConditionOperator.Equal, targetEntity.Id)
+                }
+            }
+        };
+
+        var relatedRecords = service.RetrieveMultiple(query);
+
+        foreach (var record in relatedRecords.Entities)
+        {
+            service.Delete(record.LogicalName, record.Id);
+        }
+    }
+}</code></pre>
+          </div>
+          <p>Walk through it slowly the first time: grab the context and service, confirm the message actually gave you a Target of the entity you expect, build a query for anything referencing it, then delete each match. That pattern &mdash; confirm, query, act &mdash; covers a large share of real plugins.</p>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/write-plug-in" target="_blank" rel="noopener">Learn more: Write a plug-in (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/register-plug-in" target="_blank" rel="noopener">Register a plug-in (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="7"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 8 ================= -->
+      <section class="module" id="module-8" data-module-id="8">
+        <div class="module-head">
+          <span class="module-num">08</span>
+          <h2>Ribbon customization</h2>
+          <span class="badge">Customization</span>
+        </div>
+        <div class="module-body">
+          <p>The <strong>ribbon</strong> (or command bar) is the row of buttons above a form or grid. You rarely hand-edit its XML directly &mdash; instead, you use the <strong>Ribbon Workbench</strong>, a community tool that runs inside <strong>XrmToolBox</strong>.</p>
+
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mock command bar showing a Display Rule controlling visibility and an Enable Rule controlling clickability">
+              <rect x="10" y="10" width="680" height="46" rx="8" fill="#eef1f9" stroke="#b9c2e0"/>
+              <rect x="24" y="20" width="90" height="26" rx="6" fill="#fff" stroke="#b9c2e0"/>
+              <rect x="126" y="20" width="90" height="26" rx="6" fill="var(--teal)" stroke="var(--teal-dark)"/>
+              <rect x="228" y="20" width="90" height="26" rx="6" fill="#fff" stroke="#b9c2e0"/>
+              <rect x="330" y="20" width="110" height="26" rx="6" fill="#fff" stroke="var(--amber)" stroke-dasharray="3 2"/>
+              <g font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#16213e" text-anchor="middle">
+                <text x="69" y="37">New</text><text x="171" y="37" fill="#fff">Save</text><text x="273" y="37">Assign</text><text x="385" y="37">Archive</text>
+              </g>
+              <line x1="330" y1="56" x2="290" y2="95" stroke="var(--amber)" stroke-width="1.5"/>
+              <text x="180" y="112" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#5c6480">A Display Rule decides whether "Archive" appears at all; an Enable Rule decides whether it's clickable right now.</text>
+            </svg>
+          </div>
+
+          <h3>Building a display or enable rule</h3>
+          <ol>
+            <li>Find the button's ID (the free <strong>Level Up</strong> browser extension reads this straight off the page).</li>
+            <li>Open Ribbon Workbench, locate the button, and choose <strong>Customise Command</strong>.</li>
+            <li>Add a new rule to the command, and pick a type &mdash; for example, <strong>ValueRule</strong>.</li>
+            <li>Set its properties:</li>
+          </ol>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Field</th><th>Meaning</th></tr>
+              <tr><td>Default</td><td>If true, the rule is a fallback that applies unless another condition overrides it</td></tr>
+              <tr><td>InverseResult</td><td>If true, flips the evaluated result (true becomes false, and vice versa)</td></tr>
+              <tr><td>Field</td><td>The logical name of the column being evaluated (e.g. <code>statuscode</code>)</td></tr>
+              <tr><td>Value</td><td>The value the field is compared against</td></tr>
+            </table>
+          </div>
+
+          <h3>Wiring a script to a button</h3>
+          <p>To run your own JavaScript from a ribbon button: add a <strong>Custom JavaScript Action</strong> to the command, point <strong>Library</strong> at your web resource, set <strong>Function Name</strong> to your namespaced function, and add a <code>CrmParameter</code> of type <code>PrimaryControl</code> &mdash; that parameter hands your function the form context directly.</p>
+
+          <p><a href="https://www.xrmtoolbox.com/" target="_blank" rel="noopener">Tool: XrmToolBox</a> &middot; <a href="https://www.xrmtoolbox.com/plugins/RibbonWorkbench2016/" target="_blank" rel="noopener">Tool: Ribbon Workbench</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="8"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 9 ================= -->
+      <section class="module" id="module-9" data-module-id="9">
+        <div class="module-head">
+          <span class="module-num">09</span>
+          <h2>Power Automate essentials</h2>
+          <span class="badge">Automation</span>
+        </div>
+        <div class="module-body">
+          <p>Power Automate builds automated workflows out of <strong>triggers</strong> (what starts a flow &mdash; a schedule, a new row, an incoming email) and <strong>actions</strong> (what the flow then does &mdash; update a record, send a notification, call an API).</p>
+
+          <h3>The main flow types</h3>
+          <div class="card-grid">
+            <div class="app-card">
+              <h4>Automated cloud flow</h4>
+              <p>Runs whenever its trigger event happens &mdash; no one has to press anything.</p>
+            </div>
+            <div class="app-card">
+              <h4>Instant cloud flow</h4>
+              <p>Runs when someone manually presses a button, from an app or the Power Automate mobile app.</p>
+            </div>
+            <div class="app-card">
+              <h4>Scheduled cloud flow</h4>
+              <p>Runs on a recurring schedule &mdash; daily, weekly, whatever you set.</p>
+            </div>
+            <div class="app-card">
+              <h4>Desktop flow</h4>
+              <p>Records and replays clicks and keystrokes on a desktop (RPA) &mdash; for systems with no API.</p>
+            </div>
+          </div>
+
+          <h3>A simple example</h3>
+          <p>You want a resource's status to flip from <em>Available</em> to <em>Allocated</em> automatically the moment someone fills in its allocation date. The flow: trigger on <strong>row modified</strong> for that table, filtered to when the allocation date column changes; then update the status column on that same row. No user has to remember to flip the switch by hand.</p>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-automate/" target="_blank" rel="noopener">Learn more: Power Automate documentation (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="9"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 10 ================= -->
+      <section class="module" id="module-10" data-module-id="10">
+        <div class="module-head">
+          <span class="module-num">10</span>
+          <h2>Power BI essentials</h2>
+          <span class="badge">Reporting</span>
+        </div>
+        <div class="module-body">
+          <p>Power BI turns Dataverse (and other) data into interactive reports and dashboards. Two words get used interchangeably by newcomers but mean different things:</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Feature</th><th>Report</th><th>Dashboard</th></tr>
+              <tr><td>Content</td><td>Multiple pages of tables, charts, and maps</td><td>A single page of pinned tiles</td></tr>
+              <tr><td>Interactivity</td><td>Fully interactive &mdash; filter, slice, drill down</td><td>Limited &mdash; click a tile to open its source report</td></tr>
+              <tr><td>Built in</td><td>Power BI Desktop</td><td>Power BI service, from existing report tiles</td></tr>
+              <tr><td>Use it for</td><td>In-depth analysis</td><td>An at-a-glance view of key metrics</td></tr>
+            </table>
+          </div>
+
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A mock dashboard made of four pinned tiles">
+              <rect x="10" y="10" width="600" height="260" rx="10" fill="#fff" stroke="#e2e6f2"/>
+              <rect x="26" y="26" width="270" height="110" rx="8" fill="#e6f8f6" stroke="var(--teal)"/>
+              <rect x="50" y="90" width="14" height="30" fill="var(--teal-dark)"/>
+              <rect x="74" y="70" width="14" height="50" fill="var(--teal-dark)"/>
+              <rect x="98" y="100" width="14" height="20" fill="var(--teal-dark)"/>
+              <rect x="122" y="60" width="14" height="60" fill="var(--teal-dark)"/>
+              <text x="50" y="55" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#16213e" font-weight="600">Pipeline by stage</text>
+
+              <rect x="316" y="26" width="278" height="110" rx="8" fill="#fbf5e9" stroke="var(--amber)"/>
+              <text x="340" y="55" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#16213e" font-weight="600">Win rate</text>
+              <text x="340" y="100" font-family="Space Grotesk, sans-serif" font-size="30" fill="#7a5510" font-weight="700">62%</text>
+
+              <rect x="26" y="152" width="278" height="108" rx="8" fill="#eef1f9" stroke="#b9c2e0"/>
+              <text x="50" y="180" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#16213e" font-weight="600">Revenue trend</text>
+              <polyline points="50,235 100,215 150,225 200,195 250,205 280,180" stroke="var(--navy-3)" stroke-width="3" fill="none"/>
+
+              <rect x="316" y="152" width="278" height="108" rx="8" fill="#fdeee6" stroke="#e08a4f"/>
+              <text x="340" y="180" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#16213e" font-weight="600">Open cases</text>
+              <circle cx="455" cy="215" r="30" fill="none" stroke="#e08a4f" stroke-width="14" stroke-dasharray="132 188"/>
+            </svg>
+            <p class="diagram-caption">Each of these four boxes is a "tile" &mdash; a single pinned visual on a dashboard.</p>
+          </div>
+
+          <p>Two more terms worth knowing: a <strong>semantic model</strong> is the underlying data, relationships, and calculations a report is built on; a <strong>KPI</strong> is a measurable value tracked against a target, like a sales goal of $1.2M against $1M actual.</p>
+          <p><a href="https://learn.microsoft.com/en-us/power-bi/fundamentals/" target="_blank" rel="noopener">Learn more: Get started with Power BI (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="10"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 11 ================= -->
+      <section class="module" id="module-11" data-module-id="11">
+        <div class="module-head">
+          <span class="module-num">11</span>
+          <h2>Dynamics 365 Project Operations</h2>
+          <span class="badge">Application deep dive</span>
+        </div>
+        <div class="module-body">
+          <p>Project Operations connects sales, resourcing, project management, and finance into a single application &mdash; built for organizations that sell <em>projects</em> rather than off-the-shelf products. Think of it as everything you've learned so far, aimed at running a project from prospect to payment.</p>
+
+          <div class="callout"><strong>Heads up:</strong> Project Operations can be deployed a couple of different ways &mdash; running entirely on Dataverse, or connected to Dynamics 365 Finance for deeper ERP capability. Ask your mentor which setup your organization uses; the concepts below apply either way.</div>
+
+          <h3>The four capability areas</h3>
+          <div class="card-grid">
+            <div class="app-card">
+              <h4>Project sales</h4>
+              <p>Price lists, project quotes, and profitability estimates &mdash; built on the same Lead/Opportunity concepts from Module 3.</p>
+            </div>
+            <div class="app-card">
+              <h4>Project planning</h4>
+              <p>Task, board, and timeline views (via Project for the Web) to schedule and track deliverables.</p>
+            </div>
+            <div class="app-card">
+              <h4>Resourcing</h4>
+              <p>Find, book, and manage the right people using the Schedule Board and Bookable Resources.</p>
+            </div>
+            <div class="app-card">
+              <h4>Time, expense &amp; financials</h4>
+              <p>Submit and approve time/expense entries, then bill using Time &amp; Materials, Fixed Price, or Retainer contracts.</p>
+            </div>
+          </div>
+
+          <h3>From opportunity to invoice</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 900 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lifecycle: opportunity, project contract, project plan, resourcing, time and expense, invoice">
+              <line x1="45" y1="40" x2="855" y2="40" stroke="#c7cee6" stroke-width="2"/>
+              <g font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#16213e" text-anchor="middle">
+                <circle cx="45" cy="40" r="10" fill="var(--teal)"/><text x="45" y="70">Opportunity</text>
+                <circle cx="207" cy="40" r="10" fill="var(--teal)"/><text x="207" y="70">Project contract</text>
+                <circle cx="369" cy="40" r="10" fill="var(--amber)"/><text x="369" y="70">Project plan</text>
+                <circle cx="531" cy="40" r="10" fill="var(--amber)"/><text x="531" y="70">Resourcing</text>
+                <circle cx="693" cy="40" r="10" fill="var(--amber)"/><text x="693" y="70">Time &amp; expense</text>
+                <circle cx="855" cy="40" r="10" fill="var(--teal)"/><text x="855" y="70">Invoice</text>
+              </g>
+            </svg>
+          </div>
+
+          <h3>Resourcing, connected to what you already know</h3>
+          <p>Resourcing reuses the <strong>Bookable Resource</strong> model: a system <strong>User</strong> can have a matching <strong>Bookable Resource</strong> record so they can be scheduled, and a <strong>Bookable Resource Category Assn</strong> links that resource to one or more <strong>Bookable Resource Categories</strong> (skills like "Consultant" or "Project Manager") so the Schedule Board can match the right person to the right task.</p>
+
+          <p><a href="https://learn.microsoft.com/en-us/dynamics365/project-operations/" target="_blank" rel="noopener">Learn more: Project Operations documentation (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/training/modules/get-started-project-operations/" target="_blank" rel="noopener">Course: Get started with Project Operations (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="11"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 12 ================= -->
+      <section class="module" id="module-12" data-module-id="12">
+        <div class="module-head">
+          <span class="module-num">12</span>
+          <h2>Everyday tools for CRM team members</h2>
+          <span class="badge">Tooling</span>
+        </div>
+        <div class="module-body">
+          <p>A handful of tools will show up in almost every task you do. Get them installed and get comfortable poking around in them.</p>
+          <ul>
+            <li><strong>XrmToolBox</strong> &mdash; a free desktop app hosting dozens of community-built tools for Dataverse, including the two below.</li>
+            <li><strong>Ribbon Workbench</strong> &mdash; visually edit the ribbon/command bar (Module 8).</li>
+            <li><strong>Plugin Registration Tool</strong> &mdash; register plugin assemblies and steps (Module 7).</li>
+            <li><strong>Level Up</strong> &mdash; a browser extension for quick CRM debugging shortcuts, including grabbing a ribbon button's ID.</li>
+            <li><strong>Advanced Find</strong> &mdash; the built-in query builder for searching and filtering records across the system.</li>
+          </ul>
+
+          <h3>Finding plugin trace logs</h3>
+          <p>When a plugin misbehaves, your first stop is its trace output: go to <strong>Settings &rarr; Administration &rarr; System Settings &rarr; Customization</strong> and confirm <strong>Enable logging to plug-in trace log</strong> is set to <em>All</em> or <em>Exception</em>. Logs then appear under <strong>Settings &rarr; Plug-in Trace Log</strong>.</p>
+
+          <h3>Two handy browser-console tricks</h3>
+          <p>Both run straight in your browser's developer console while a Dynamics 365 form is open &mdash; useful for quick checks without writing a full web resource.</p>
+          <div class="code-block">
+            <div class="code-label">Get the name of the form you're looking at</div>
+            <pre><code>var formName = Xrm.Page.ui.formSelector.getCurrentItem().getLabel();
+console.log(formName);</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-label">Add a temporary filter to a lookup (e.g. show only active contacts)</div>
+            <pre><code>(function () {
+    var formContext = Xrm.Page;
+    var control = formContext.getControl("primarycontactid");
+    control.addPreSearch(function () {
+        var filter = "&lt;filter&gt;&lt;condition attribute='statecode' operator='eq' value='0' /&gt;&lt;/filter&gt;";
+        control.addCustomFilter(filter);
+    });
+})();</code></pre>
+          </div>
+
+          <div class="callout"><strong>Looking ahead:</strong> as you grow into the role, you'll likely touch integrations between Dynamics 365 and outside systems (accounting platforms, marketing tools, document generation). Those build on exactly what's in this guide &mdash; plugins, custom entities, Power Automate &mdash; plus extra pieces like OAuth token management and field mapping. Your team will walk you through a real integration project when you're ready; there's no need to front-load it now.</div>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="12"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= GLOSSARY ================= -->
+      <section class="module glossary-section" id="glossary">
+        <div class="module-head">
+          <h2>Glossary of key terms</h2>
+        </div>
+        <div class="module-body">
+          <p>Every term above, plus a few more you'll run into, in one searchable place. Type to filter, or pick a category chip.</p>
+          <div class="glossary-tools">
+            <input type="text" id="glossarySearch" class="glossary-search" placeholder="Search a term, e.g. &quot;pre-image&quot; or &quot;solution&quot;&hellip;">
+            <div class="chip-row" id="chipRow">
+              <button class="chip active" data-cat="all" type="button">All</button>
+              <button class="chip" data-cat="platform" type="button">Platform &amp; data</button>
+              <button class="chip" data-cat="apps" type="button">Apps</button>
+              <button class="chip" data-cat="entities" type="button">Core entities</button>
+              <button class="chip" data-cat="ui" type="button">Customization &amp; UI</button>
+              <button class="chip" data-cat="automation" type="button">Automation &amp; code</button>
+              <button class="chip" data-cat="plugin" type="button">Plugin development</button>
+              <button class="chip" data-cat="reporting" type="button">Reporting</button>
+              <button class="chip" data-cat="admin" type="button">Admin &amp; security</button>
+              <button class="chip" data-cat="tools" type="button">Tools</button>
+            </div>
+          </div>
+
+          <div class="term-grid" id="termGrid">
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Power Platform</h4><p>Microsoft's family of low-code tools &mdash; Power Apps, Power Automate, Power BI, Power Pages, Copilot Studio &mdash; sharing one data platform.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Dataverse</h4><p>The secure, cloud data platform under Power Platform and Dynamics 365. Stores tables, enforces security, runs business logic.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Environment</h4><p>An isolated space (dev, test, production) holding its own apps, flows, and Dataverse database.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Solution</h4><p>A packaged container of customizations you move between environments.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Managed solution</h4><p>A locked, non-editable package meant for production &mdash; import it, don't edit it directly.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Unmanaged solution</h4><p>An editable package used while actively building or customizing.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Table (Entity)</h4><p>A structured set of rows and columns, e.g. Account or Contact. "Entity" is the older name, still used in code.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Column (Field)</h4><p>A single piece of data on a table, like a phone number or a status.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Row (Record)</h4><p>One entry in a table &mdash; one specific Contact, for example.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Relationship</h4><p>A defined link between two tables, such as one Account having many Contacts.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Relationship behavior</h4><p>The rule for related rows when a parent changes: Referential, Referential (restrict delete), Parental (cascades everything), or Custom.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>OData</h4><p>The REST-based protocol Dataverse's Web API uses for create/read/update/delete over HTTP.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>FetchXML</h4><p>An XML query language for Dataverse data, often paired with a paging cookie for large result sets.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Connector</h4><p>The bridge between an external data source or service and Power Apps / Power Automate.</p></div>
+            <div class="term-card" data-cat="platform"><span class="term-cat">Platform &amp; data</span><h4>Connection reference</h4><p>A solution component pointing to a connection, so flows can be repointed without editing each one individually.</p></div>
+
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Canvas app</h4><p>An app you design freely on a blank canvas; can connect to almost any data source.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Model-driven app</h4><p>An app generated from your Dataverse data model. Dynamics 365 apps are model-driven.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Power Pages</h4><p>A tool for building external-facing websites that read and write Dataverse data.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Power Automate</h4><p>The workflow automation product connecting triggers to actions across systems.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Power BI</h4><p>The reporting and analytics product for interactive reports and dashboards.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Copilot Studio</h4><p>Microsoft's tool for building conversational AI agents.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Dynamics 365 Sales</h4><p>The CRM app for managing leads, opportunities, and the sales pipeline.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Dynamics 365 Customer Service</h4><p>The app for managing support cases, SLAs, and omnichannel service.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Dynamics 365 Field Service</h4><p>The app for scheduling and managing onsite technicians and work orders.</p></div>
+            <div class="term-card" data-cat="apps"><span class="term-cat">Apps</span><h4>Dynamics 365 Project Operations</h4><p>Connects project sales, planning, resourcing, time/expense, and billing.</p></div>
+
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Account</h4><p>A company or organization your business deals with.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Contact</h4><p>An individual person, often linked to an Account.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Lead</h4><p>An unqualified prospect, not yet vetted as a real sales opportunity.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Opportunity</h4><p>A qualified, in-progress deal, created once a Lead is qualified.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Campaign</h4><p>A marketing effort aimed at a target audience.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Case</h4><p>A customer service issue or request that needs resolving.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Activity</h4><p>A logged interaction &mdash; email, call, task, or appointment &mdash; tied to another record.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Product</h4><p>An item or service your organization sells.</p></div>
+            <div class="term-card" data-cat="entities"><span class="term-cat">Core entities</span><h4>Quote / Order / Invoice</h4><p>The documents carrying an Opportunity through pricing, commitment, and billing.</p></div>
+
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Form</h4><p>The screen used to view or edit one row: Main, Quick Create, Quick View, or Card.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>View</h4><p>A configurable list of rows from a table; public (shared) or personal (just you).</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Subgrid</h4><p>A form control showing related rows without leaving the current record.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Business rule</h4><p>A no-code rule that validates, shows/hides, requires, or sets a value on a form and, if scoped that way, on the server.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Business process flow (BPF)</h4><p>A guided, staged path across a form (or several tables) walking users through a defined process.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>BPF stage</h4><p>One step of a business process flow, grouping the columns to fill in before moving on.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Rollup field</h4><p>A read-only field that automatically totals, counts, or averages values from related rows.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Lookup field</h4><p>A field referencing a row in another table, creating a relationship between records.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Ribbon / command bar</h4><p>The row of buttons above a form or grid, customized with tools like Ribbon Workbench.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Sitemap</h4><p>The navigation structure (areas, groups, subareas) of a model-driven app.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Dashboard</h4><p>A single screen combining charts, lists, and other components for an at-a-glance view.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization &amp; UI</span><h4>Chart</h4><p>A visual summary of table data &mdash; bar, pie, line &mdash; usable in views and dashboards.</p></div>
+
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>Workflow</h4><p>A classic Dataverse process that runs in the background without user interaction.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>Plugin</h4><p>Custom server-side (.NET) code that runs in response to a Dataverse event.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>Plugin assembly</h4><p>The compiled .dll file containing one or more plugin classes, registered with Dataverse.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>Web resource</h4><p>A file (JavaScript, HTML, image) uploaded into Dataverse to extend forms or the ribbon.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>Custom action</h4><p>A reusable operation you can call from JavaScript, a flow, or another plugin.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>Cloud flow</h4><p>A Power Automate flow that runs in the cloud: Automated, Instant, or Scheduled.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>Desktop flow</h4><p>A Power Automate flow automating actions on a desktop UI (RPA).</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation &amp; code</span><h4>PCF</h4><p>Power Apps Component Framework &mdash; a way to build custom, code-based controls for forms and views.</p></div>
+
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>IPlugin</h4><p>The interface every plugin class implements, exposing a single Execute method.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>IServiceProvider</h4><p>The service locator passed into Execute; used to fetch context, tracing, and organization services.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>IOrganizationService</h4><p>Create, Retrieve, Update, Delete, and RetrieveMultiple &mdash; your CRUD toolkit inside a plugin.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>IOrganizationServiceFactory</h4><p>Creates an IOrganizationService instance, usually as the calling user.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>IPluginExecutionContext</h4><p>Carries the message name, entity, stage, input/output parameters, images, and more.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>ITracingService</h4><p>Writes trace log entries you read afterward in the Plug-in Trace Log &mdash; your main debugger.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Target</h4><p>The record data that triggered the plugin.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Pre-image</h4><p>A snapshot of the row before the core operation.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Post-image</h4><p>A snapshot of the row after the core operation.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Message</h4><p>The operation triggering a plugin step: Create, Update, Delete, Associate, and so on.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Pipeline stage</h4><p>Where in the pipeline a plugin runs: Pre-validation (10), Pre-operation (20), or Post-operation (40). Not the same "stage" as a BPF stage.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Sync / async mode</h4><p>Whether the plugin runs immediately and blocks the user, or is queued to run afterward.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Filtering attributes</h4><p>The specific columns that must change for an Update-triggered plugin to fire.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Secure / unsecure configuration</h4><p>Two text fields passed into a plugin step; secure is encrypted, unsecure is visible to anyone with access to the step.</p></div>
+            <div class="term-card" data-cat="plugin"><span class="term-cat">Plugin development</span><h4>Execution order</h4><p>The number controlling which of several plugins on the same step runs first.</p></div>
+
+            <div class="term-card" data-cat="reporting"><span class="term-cat">Reporting</span><h4>Report</h4><p>A multi-page, interactive document built from a data model, with filtering and drill-down.</p></div>
+            <div class="term-card" data-cat="reporting"><span class="term-cat">Reporting</span><h4>Dashboard (Power BI)</h4><p>A single page of pinned tiles from one or more reports.</p></div>
+            <div class="term-card" data-cat="reporting"><span class="term-cat">Reporting</span><h4>Tile</h4><p>One pinned visualization on a dashboard.</p></div>
+            <div class="term-card" data-cat="reporting"><span class="term-cat">Reporting</span><h4>Semantic model</h4><p>The underlying data, relationships, and calculations a report is built on.</p></div>
+            <div class="term-card" data-cat="reporting"><span class="term-cat">Reporting</span><h4>KPI</h4><p>A measurable value tracked against a target to gauge business performance.</p></div>
+
+            <div class="term-card" data-cat="admin"><span class="term-cat">Admin &amp; security</span><h4>Security role</h4><p>A named set of privileges (read/write/delete, at what scope) assigned to users or teams.</p></div>
+            <div class="term-card" data-cat="admin"><span class="term-cat">Admin &amp; security</span><h4>Business unit</h4><p>An organizational grouping used to scope security and reporting.</p></div>
+            <div class="term-card" data-cat="admin"><span class="term-cat">Admin &amp; security</span><h4>Team</h4><p>A group of users that can own records and share a security role.</p></div>
+
+            <div class="term-card" data-cat="tools"><span class="term-cat">Tools</span><h4>XrmToolBox</h4><p>A free, community-built desktop app hosting dozens of tools for working with Dataverse.</p></div>
+            <div class="term-card" data-cat="tools"><span class="term-cat">Tools</span><h4>Ribbon Workbench</h4><p>An XrmToolBox tool for visually editing the ribbon without hand-writing XML.</p></div>
+            <div class="term-card" data-cat="tools"><span class="term-cat">Tools</span><h4>Plugin Registration Tool</h4><p>The tool used to upload plugin assemblies and register their steps.</p></div>
+            <div class="term-card" data-cat="tools"><span class="term-cat">Tools</span><h4>Level Up</h4><p>A browser extension adding CRM debugging shortcuts, including finding a ribbon button's ID.</p></div>
+            <div class="term-card" data-cat="tools"><span class="term-cat">Tools</span><h4>Advanced Find</h4><p>The built-in query builder for searching and filtering records across the system.</p></div>
+          </div>
+          <p class="no-results" id="noResults">No terms match that search &mdash; try a different word or clear the filter.</p>
+        </div>
+      </section>
+
+      <!-- ================= RESOURCES ================= -->
+      <section class="module resources-section" id="resources">
+        <div class="module-head">
+          <h2>Official resources &amp; further learning</h2>
+        </div>
+        <div class="module-body">
+          <p>Everything below is straight from Microsoft &mdash; use it any time this guide compresses something you want in full detail.</p>
+
+          <div class="resource-group">
+            <h3>Certification &amp; courses</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/credentials/certifications/power-platform-fundamentals/" target="_blank" rel="noopener">Microsoft Certified: Power Platform Fundamentals (PL-900)</a><span>&mdash; the natural first certification for this role</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/pl-900" target="_blank" rel="noopener">PL-900 study guide</a><span>&mdash; topic breakdown and exam weighting</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/training/courses/pl-900t00" target="_blank" rel="noopener">Course: Introduction to Microsoft Power Platform</a><span>&mdash; free, self-paced</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Power Platform &amp; Dataverse</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/" target="_blank" rel="noopener">Power Platform documentation</a><span>&mdash; the top-level hub for every product</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/data-platform-intro" target="_blank" rel="noopener">What is Microsoft Dataverse?</a><span>&mdash; Module 1</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/training/paths/extend-power-platform-dataverse/" target="_blank" rel="noopener">Learning path: Extending Power Platform Dataverse</a><span>&mdash; where plugin development lives officially</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Dynamics 365 apps</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/dynamics365/sales/" target="_blank" rel="noopener">Dynamics 365 Sales documentation</a><span>&mdash; Modules 2 &amp; 3</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/dynamics365/project-operations/" target="_blank" rel="noopener">Dynamics 365 Project Operations documentation</a><span>&mdash; Module 11</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/training/modules/get-started-project-operations/" target="_blank" rel="noopener">Course: Get started with Dynamics 365 Project Operations</a><span>&mdash; free, self-paced</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/training/paths/get-started-features-project-operations/" target="_blank" rel="noopener">Learning path: Features in Project Operations</a><span>&mdash; deeper dive per capability area</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Customization: rules, flows, and forms</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/maker/data-platform/data-platform-create-business-rule" target="_blank" rel="noopener">Create a business rule</a><span>&mdash; Module 5</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-automate/business-process-flows-overview" target="_blank" rel="noopener">Business process flows overview</a><span>&mdash; Module 5</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-automate/create-business-process-flow" target="_blank" rel="noopener">Create a business process flow</a><span>&mdash; step-by-step</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Plugin development</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/plug-ins" target="_blank" rel="noopener">Use plug-ins to extend business processes</a><span>&mdash; Module 7</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/write-plug-in" target="_blank" rel="noopener">Write a plug-in</a><span>&mdash; Module 7</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/register-plug-in" target="_blank" rel="noopener">Register a plug-in</a><span>&mdash; Module 7</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/tutorial-write-plug-in" target="_blank" rel="noopener">Tutorial: Write and register a plug-in</a><span>&mdash; hands-on walkthrough</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Power Automate &amp; Power BI</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-automate/" target="_blank" rel="noopener">Power Automate documentation</a><span>&mdash; Module 9</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/training/modules/get-started-flows/" target="_blank" rel="noopener">Course: Get started with Power Automate</a><span>&mdash; free, self-paced</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-bi/fundamentals/" target="_blank" rel="noopener">Power BI: get started documentation</a><span>&mdash; Module 10</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Tools</h3>
+            <ul class="resource-list">
+              <li><a href="https://www.xrmtoolbox.com/" target="_blank" rel="noopener">XrmToolBox</a><span>&mdash; Modules 7 &amp; 12</span></li>
+              <li><a href="https://www.xrmtoolbox.com/plugins/RibbonWorkbench2016/" target="_blank" rel="noopener">Ribbon Workbench (XrmToolBox plugin)</a><span>&mdash; Module 8</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= EXAM CTA ================= -->
+      <section class="module exam-cta" id="exam">
+        <div class="module-head">
+          <h2>Ready to test what you learned?</h2>
+          <span class="badge">Knowledge check</span>
+        </div>
+        <div class="module-body">
+          <p>Take a 16-question exam covering all 12 modules. Score 80% or higher to pass.</p>
+          <button class="btn-exam btn-exam-primary" type="button" onclick="showExam()">Start the exam</button>
+        </div>
+      </section>
+    </div>
+
+    <header class="hero">
+      <div class="hero-inner">
+        <span class="hero-eyebrow">Knowledge Check</span>
+        <h1>Test your Dynamics 365 CRM foundations</h1>
+        <p class="lead">16 questions across the 12 modules. Score 80% or higher to pass.</p>
+
+        <div class="hero-progress" id="examProgress" style="display:none;">
+          <svg width="52" height="52" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.18)" stroke-width="10" fill="none"/>
+            <circle id="examProgressRingFg" cx="60" cy="60" r="52" stroke="var(--teal)" stroke-width="10" fill="none"
+              stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+              transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="progress-ring-label" id="examProgressLabel">0 / 16 &middot; 0%</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="exam-view" id="examView">
+      <div class="content-inner">
+
+        <section class="intro-card" id="startCard">
+          <h2>Ready?</h2>
+          <p>The questions pull from every module in the guide: Power Platform, Dataverse, the D365 apps, core entities, forms and views, business rules, plugins, ribbon work, Power Automate, Power BI, Project Operations, and everyday tools.</p>
+          <button class="btn-exam btn-exam-primary" id="startBtn" type="button">Start the exam</button>
+        </section>
+
+        <div id="examContainer" style="display:none;"></div>
+
+        <div id="resultsContainer" style="display:none;"></div>
+
+        <footer class="site-footer">
+          <p><a href="#" onclick="showGuide(); return false;">← Back to the learning guide</a></p>
+        </footer>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>Built to get a new CRM team member from zero to dangerous, one module at a time.<br>Something out of date or missing? Flag it with whoever's maintaining this guide. &middot; <a href="#top">Back to top</a></p>
+    </footer>
+
+  </main>
+</div>
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+(function(){
+  var TOTAL_MODULES = 12;
+  var progress = {};
+  var STORAGE_KEY = 'd365-onboarding-progress-v1';
+  var autoChecked = {};
+  var userUnchecked = {};
+  var seenModules = {};
+  var previousCompleted = 0;
+  var isFirstApply = true;
+
+  function hasStorage(){
+    return typeof window.storage !== 'undefined' && window.storage !== null;
+  }
+
+  async function loadProgress(){
+    if (hasStorage()){
+      try{
+        var result = await window.storage.get(STORAGE_KEY, false);
+        if (result && result.value){
+          progress = JSON.parse(result.value);
+        }
+      }catch(e){
+        progress = {};
+      }
+    }
+    applyProgressToUI();
+  }
+
+  async function saveProgress(){
+    if (!hasStorage()) return;
+    try{
+      await window.storage.set(STORAGE_KEY, JSON.stringify(progress), false);
+    }catch(e){
+      console.warn('Could not save progress right now.', e);
+    }
+  }
+
+  function applyProgressToUI(){
+    var completed = 0;
+    for (var i = 1; i <= TOTAL_MODULES; i++){
+      var id = String(i);
+      var isDone = !!progress[id];
+      if (isDone) completed++;
+
+      var checkbox = document.querySelector('.module-checkbox[data-module="' + id + '"]');
+      if (checkbox) checkbox.checked = isDone;
+
+      var section = document.getElementById('module-' + id);
+      if (section) section.classList.toggle('is-complete', isDone);
+
+      var navDot = document.querySelector('.side-nav a[data-module="' + id + '"] .dot');
+      if (navDot) navDot.classList.toggle('done', isDone);
+    }
+    updateProgressRing(completed);
+    if (!isFirstApply && completed === TOTAL_MODULES && previousCompleted < TOTAL_MODULES){
+      playCompletionSound();
+    }
+    previousCompleted = completed;
+    isFirstApply = false;
+  }
+
+  function playCompletionSound(){
+    try {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      var ctx = new AudioContext();
+      var t = ctx.currentTime;
+
+      var osc1 = ctx.createOscillator();
+      var gain1 = ctx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(523.25, t);
+      gain1.gain.setValueAtTime(0.12, t);
+      gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc1.start(t);
+      osc1.stop(t + 0.4);
+
+      var osc2 = ctx.createOscillator();
+      var gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(783.99, t + 0.12);
+      gain2.gain.setValueAtTime(0, t + 0.12);
+      gain2.gain.linearRampToValueAtTime(0.12, t + 0.14);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+      osc2.start(t + 0.12);
+      osc2.stop(t + 0.7);
+    } catch(e) {
+      console.warn('Could not play completion sound.', e);
+    }
+  }
+
+  function updateProgressRing(completed){
+    var pct = Math.round((completed / TOTAL_MODULES) * 100);
+    var circle = document.getElementById('progressRingFg');
+    var circumference = 2 * Math.PI * 52;
+    if (circle){
+      var offset = circumference - (pct / 100) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+    var label = document.getElementById('progressLabel');
+    if (label){
+      label.innerHTML = completed + ' / ' + TOTAL_MODULES + ' modules &middot; ' + pct + '%<small>Saved automatically as you go</small>';
+    }
+    var banner = document.getElementById('completionBanner');
+    if (banner){
+      banner.classList.toggle('hidden', completed < TOTAL_MODULES);
+    }
+  }
+
+  document.addEventListener('change', function(e){
+    if (e.target.classList && e.target.classList.contains('module-checkbox')){
+      var id = e.target.getAttribute('data-module');
+      progress[id] = e.target.checked;
+      if (e.target.checked){
+        delete userUnchecked[id];
+      } else {
+        userUnchecked[id] = true;
+        delete autoChecked[id];
+      }
+      applyProgressToUI();
+      saveProgress();
+    }
+  });
+
+  var resetBtn = document.getElementById('resetProgressBtn');
+  var resetConfirm = document.getElementById('resetConfirm');
+  var resetYes = document.getElementById('resetYes');
+  var resetNo = document.getElementById('resetNo');
+
+  if (resetBtn){
+    resetBtn.addEventListener('click', function(){
+      resetConfirm.classList.remove('hidden');
+    });
+  }
+  if (resetNo){
+    resetNo.addEventListener('click', function(){
+      resetConfirm.classList.add('hidden');
+    });
+  }
+  if (resetYes){
+    resetYes.addEventListener('click', async function(){
+      progress = {};
+      await saveProgress();
+      applyProgressToUI();
+      resetConfirm.classList.add('hidden');
+    });
+  }
+
+  // ---- glossary filter ----
+  var glossarySearch = document.getElementById('glossarySearch');
+  var chips = document.querySelectorAll('.chip');
+  var noResults = document.getElementById('noResults');
+
+  function filterGlossary(){
+    var q = (glossarySearch ? glossarySearch.value : '').toLowerCase();
+    var activeChip = document.querySelector('.chip.active');
+    var cat = activeChip ? activeChip.getAttribute('data-cat') : 'all';
+    var visibleCount = 0;
+
+    document.querySelectorAll('.term-card').forEach(function(card){
+      var matchesCat = (cat === 'all' || card.getAttribute('data-cat') === cat);
+      var matchesSearch = card.textContent.toLowerCase().indexOf(q) !== -1;
+      var show = matchesCat && matchesSearch;
+      card.style.display = show ? '' : 'none';
+      if (show) visibleCount++;
+    });
+
+    if (noResults) noResults.style.display = (visibleCount === 0) ? 'block' : 'none';
+  }
+
+  if (glossarySearch) glossarySearch.addEventListener('input', filterGlossary);
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      this.classList.add('active');
+      filterGlossary();
+    });
+  });
+
+  // ---- mobile nav ----
+  var sidebar = document.getElementById('sidebar');
+  var mobileToggle = document.getElementById('mobileNavToggle');
+  if (mobileToggle){
+    mobileToggle.addEventListener('click', function(){
+      sidebar.classList.toggle('open');
+    });
+  }
+  document.querySelectorAll('.side-nav a').forEach(function(a){
+    a.addEventListener('click', function(){
+      sidebar.classList.remove('open');
+    });
+  });
+  document.addEventListener('click', function(e){
+    if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== mobileToggle){
+      sidebar.classList.remove('open');
+    }
+  });
+
+  // ---- active section highlight ----
+  var navLinks = document.querySelectorAll('.side-nav a[data-module]');
+  var trackedSections = document.querySelectorAll('.module[data-module-id]');
+  if ('IntersectionObserver' in window && trackedSections.length){
+    var navObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = entry.target.getAttribute('data-module-id');
+          navLinks.forEach(function(l){ l.classList.remove('active'); });
+          var activeLink = document.querySelector('.side-nav a[data-module="' + id + '"]');
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    trackedSections.forEach(function(s){ navObserver.observe(s); });
+
+    // ---- auto-check sections scrolled past ----
+    var autoCheckObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var id = entry.target.getAttribute('data-module-id');
+        if (entry.isIntersecting){
+          seenModules[id] = true;
+        } else if (seenModules[id] && entry.boundingClientRect.bottom < 0){
+          if (!progress[id] && !userUnchecked[id]){
+            progress[id] = true;
+            autoChecked[id] = true;
+            applyProgressToUI();
+            saveProgress();
+          }
+        }
+      });
+    }, { threshold: 0 });
+    trackedSections.forEach(function(s){ autoCheckObserver.observe(s); });
+  }
+
+  // ---- reveal on scroll ----
+  var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealTargets = document.querySelectorAll('.module');
+  if (prefersReduced || !('IntersectionObserver' in window)){
+    revealTargets.forEach(function(s){ s.classList.add('revealed'); });
+  } else {
+    var revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    revealTargets.forEach(function(s){ revealObserver.observe(s); });
+  }
+
+  loadProgress();
+})();
+
+  // ---- guide / exam view toggle ----
+  function showExam(){
+    document.getElementById('guideView').classList.add('hidden');
+    document.getElementById('examView').classList.add('active');
+    document.getElementById('guideProgress').style.display = 'none';
+    document.getElementById('examProgress').style.display = 'flex';
+    window.scrollTo(0,0);
+  }
+  function showGuide(){
+    document.getElementById('guideView').classList.remove('hidden');
+    document.getElementById('examView').classList.remove('active');
+    document.getElementById('guideProgress').style.display = 'flex';
+    document.getElementById('examProgress').style.display = 'none';
+    window.scrollTo(0,0);
+  }
+
+
+(function(){
+  var TOTAL = 16;
+  var PASS_PCT = 80;
+  var current = 0;
+  var answers = new Array(TOTAL).fill(null);
+
+  var questions = [
+    {
+      type: 'mc',
+      question: 'What is Dataverse in the Power Platform ecosystem?',
+      choices: [
+        'A canvas app designer for mobile screens',
+        'The secure, cloud-based data platform shared by Power Platform and Dynamics 365',
+        'A reporting tool for building dashboards',
+        'A chatbot framework for customer service'
+      ],
+      correct: 1,
+      explanation: 'Dataverse is the shared data platform underneath Power Apps, Power Automate, Power BI, Power Pages, Copilot Studio, and Dynamics 365.'
+    },
+    {
+      type: 'mc',
+      question: 'Which Power Platform product is used to build model-driven apps like Dynamics 365 Sales?',
+      choices: ['Power Automate', 'Power BI', 'Power Apps', 'Power Pages'],
+      correct: 2,
+      explanation: 'Power Apps builds both canvas apps and model-driven apps; Dynamics 365 itself is a set of model-driven apps.'
+    },
+    {
+      type: 'tf',
+      question: 'Dynamics 365 is a single application, not a family of apps.',
+      correct: false,
+      explanation: 'Dynamics 365 is a family of model-driven apps built on Dataverse, including Sales, Customer Service, Field Service, and Project Operations.'
+    },
+    {
+      type: 'mc',
+      question: 'Which Dynamics 365 app is best described as scheduling and tracking onsite technicians and resources?',
+      choices: ['Sales', 'Customer Service', 'Field Service', 'Project Operations'],
+      correct: 2,
+      explanation: 'Field Service handles work orders, resource scheduling, and mobile/mixed-reality support for technicians in the field.'
+    },
+    {
+      type: 'match',
+      question: 'Match each core CRM entity to its description.',
+      terms: ['Account', 'Contact', 'Lead', 'Opportunity'],
+      options: [
+        'An unqualified prospect not yet vetted as a real deal',
+        'A company or organization you deal with',
+        'A qualified, in-progress deal',
+        'An individual person, often linked to an Account'
+      ],
+      correct: [1, 3, 0, 2],
+      explanation: 'Account = company; Contact = person; Lead = unqualified prospect; Opportunity = qualified deal.'
+    },
+    {
+      type: 'mc',
+      question: 'What is the difference between a form and a view in Dynamics 365?',
+      choices: [
+        'A form shows a list; a view shows one record',
+        'A form shows one record; a view shows a list of records',
+        'They are the same thing with different names',
+        'A form is read-only; a view is editable'
+      ],
+      correct: 1,
+      explanation: 'A form displays one record for editing; a view displays a filtered, sortable list of records.'
+    },
+    {
+      type: 'tf',
+      question: 'A business rule can validate data, show or hide a column, and set a value without writing code.',
+      correct: true,
+      explanation: 'Business rules are a no-code option for validation, visibility, requirement level, and setting values on a form (and server-side when scoped to the table).'
+    },
+    {
+      type: 'mc',
+      question: 'When should you choose a plugin over a client-side JavaScript script?',
+      choices: [
+        'When you want to change the color of a form field',
+        'When the rule must enforce behavior no matter how the record is changed',
+        'When you only need validation while a user is typing',
+        'When you want to hide a button from the ribbon'
+      ],
+      correct: 1,
+      explanation: 'Plugins run server-side on database events, so they enforce rules across the UI, imports, integrations, and API calls.'
+    },
+    {
+      type: 'mc',
+      question: 'What is a plugin assembly?',
+      choices: [
+        'A JavaScript file uploaded as a web resource',
+        'A compiled .dll containing plugin classes',
+        'A Power Automate flow triggered by Dataverse events',
+        'A XML definition for the ribbon command bar'
+      ],
+      correct: 1,
+      explanation: 'A plugin is a compiled class in a plugin assembly (.dll) that runs when a specific table and message combination is processed.'
+    },
+    {
+      type: 'mc',
+      question: 'Which community tool, hosted in XrmToolBox, is used to visually edit the ribbon without hand-writing XML?',
+      choices: ['Plugin Registration Tool', 'Ribbon Workbench', 'Level Up', 'Advanced Find'],
+      correct: 1,
+      explanation: 'Ribbon Workbench is the XrmToolBox tool for visually editing the ribbon/command bar.'
+    },
+    {
+      type: 'tf',
+      question: 'All Power Automate flows must be triggered manually by a user pressing a button.',
+      correct: false,
+      explanation: 'Power Automate supports automated triggers (e.g., when a row is created) as well as instant/manual triggers and scheduled flows.'
+    },
+    {
+      type: 'mc',
+      question: 'In Power BI, what is the main difference between a report and a dashboard?',
+      choices: [
+        'A report is a single page of pinned tiles; a dashboard has multiple pages',
+        'A report has multiple pages with full interactivity; a dashboard is a single page of pinned tiles',
+        'A dashboard is built in Power BI Desktop; a report is built in the service',
+        'There is no difference; the terms are interchangeable'
+      ],
+      correct: 1,
+      explanation: 'Reports are multi-page and fully interactive; dashboards are single pages of pinned tiles from one or more reports.'
+    },
+    {
+      type: 'mc',
+      question: 'Dynamics 365 Project Operations connects which business areas into one application?',
+      choices: [
+        'Only sales and marketing',
+        'Only finance and HR',
+        'Sales, resourcing, project management, and finance',
+        'Customer service and field service'
+      ],
+      correct: 2,
+      explanation: 'Project Operations connects sales, resourcing, project management, and finance for project-based businesses.'
+    },
+    {
+      type: 'mc',
+      question: 'Which tool is used to upload plugin assemblies and register their steps?',
+      choices: ['Ribbon Workbench', 'Plugin Registration Tool', 'XrmToolBox', 'Advanced Find'],
+      correct: 1,
+      explanation: 'The Plugin Registration Tool registers plugin assemblies and defines the table, message, stage, and mode for each step.'
+    },
+    {
+      type: 'mc',
+      question: 'What is an environment in the Power Platform?',
+      choices: [
+        'A single user profile',
+        'An isolated space with its own apps, flows, and Dataverse database',
+        'A type of security role',
+        'A built-in reporting template'
+      ],
+      correct: 1,
+      explanation: 'An environment is an isolated space (dev, test, production) holding its own apps, flows, and Dataverse database.'
+    },
+    {
+      type: 'mc',
+      question: 'What best describes a managed solution?',
+      choices: [
+        'An editable package used while actively building',
+        'A locked, non-editable package meant for production',
+        'A personal view saved by one user',
+        'A sandbox plugin execution mode'
+      ],
+      correct: 1,
+      explanation: 'Managed solutions are locked and non-editable, intended for moving customizations into production environments.'
+    }
+  ];
+
+  var container = document.getElementById('examContainer');
+  var resultsContainer = document.getElementById('resultsContainer');
+  var startCard = document.getElementById('startCard');
+  var startBtn = document.getElementById('startBtn');
+  var progressRing = document.getElementById('examProgressRingFg');
+  var progressLabel = document.getElementById('examProgressLabel');
+
+  function updateProgress(){
+    var answered = answers.filter(function(a){ return a !== null; }).length;
+    var pct = Math.round((answered / TOTAL) * 100);
+    var circumference = 2 * Math.PI * 52;
+    var offset = circumference - (pct / 100) * circumference;
+    if (progressRing) progressRing.style.strokeDashoffset = offset;
+    if (progressLabel) progressLabel.textContent = answered + ' / ' + TOTAL + ' \u00b7 ' + pct + '%';
+  }
+
+  function renderQuestion(index){
+    var q = questions[index];
+    var html = '<div class="exam-card">';
+    html += '<div class="question-header"><span class="question-counter">Question ' + (index + 1) + ' of ' + TOTAL + '</span></div>';
+    html += '<div class="question-text">' + escapeHtml(q.question) + '</div>';
+
+    if (q.type === 'mc'){
+      html += '<div class="choices">';
+      q.choices.forEach(function(choice, i){
+        html += '<label class="choice" data-idx="' + i + '">';
+        html += '<input type="radio" name="q' + index + '" value="' + i + '"' + (answers[index] === i ? ' checked' : '') + '>';
+        html += '<span class="choice-label">' + escapeHtml(choice) + '</span>';
+        html += '</label>';
+      });
+      html += '</div>';
+    } else if (q.type === 'tf'){
+      html += '<div class="choices">';
+      [true, false].forEach(function(val){
+        var i = val ? 1 : 0;
+        html += '<label class="choice" data-idx="' + i + '">';
+        html += '<input type="radio" name="q' + index + '" value="' + i + '"' + (answers[index] === i ? ' checked' : '') + '>';
+        html += '<span class="choice-label">' + (val ? 'True' : 'False') + '</span>';
+        html += '</label>';
+      });
+      html += '</div>';
+    } else if (q.type === 'match'){
+      html += '<div class="matching-wrap">';
+      q.terms.forEach(function(term, i){
+        html += '<div class="matching-row">';
+        html += '<span class="matching-term">' + escapeHtml(term) + '</span>';
+        html += '<select class="matching-select" data-idx="' + i + '">';
+        html += '<option value="">-- Select description --</option>';
+        q.options.forEach(function(opt, j){
+          html += '<option value="' + j + '"' + (answers[index] && answers[index][i] === j ? ' selected' : '') + '>' + escapeHtml(opt) + '</option>';
+        });
+        html += '</select>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="nav-btns">';
+    html += '<button class="btn-exam btn-exam-secondary" id="prevBtn" type="button"' + (index === 0 ? ' disabled' : '') + '>Previous</button>';
+    if (index < TOTAL - 1){
+      html += '<button class="btn-exam btn-exam-primary" id="nextBtn" type="button">Next</button>';
+    } else {
+      html += '<button class="btn-exam btn-exam-primary" id="finishBtn" type="button">Finish &amp; score</button>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    container.innerHTML = html;
+    bindQuestionEvents(index);
+  }
+
+  function bindQuestionEvents(index){
+    var q = questions[index];
+    if (q.type === 'mc' || q.type === 'tf'){
+      container.querySelectorAll('.choice input').forEach(function(input){
+        input.addEventListener('change', function(){
+          answers[index] = parseInt(this.value, 10);
+          updateProgress();
+          highlightSelected(index);
+        });
+      });
+    } else if (q.type === 'match'){
+      container.querySelectorAll('.matching-select').forEach(function(select){
+        select.addEventListener('change', function(){
+          if (!answers[index]) answers[index] = new Array(q.terms.length).fill(null);
+          var idx = parseInt(this.getAttribute('data-idx'), 10);
+          var val = this.value === '' ? null : parseInt(this.value, 10);
+          answers[index][idx] = val;
+          updateProgress();
+        });
+      });
+    }
+
+    var prevBtn = document.getElementById('prevBtn');
+    var nextBtn = document.getElementById('nextBtn');
+    var finishBtn = document.getElementById('finishBtn');
+
+    if (prevBtn) prevBtn.addEventListener('click', function(){ current--; renderQuestion(current); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ current++; renderQuestion(current); });
+    if (finishBtn) finishBtn.addEventListener('click', showResults);
+
+    highlightSelected(index);
+  }
+
+  function highlightSelected(index){
+    var q = questions[index];
+    if (q.type === 'mc' || q.type === 'tf'){
+      container.querySelectorAll('.choice').forEach(function(label){
+        label.classList.toggle('selected', answers[index] === parseInt(label.getAttribute('data-idx'), 10));
+      });
+    }
+  }
+
+  function showResults(){
+    var score = 0;
+    var reviewHtml = '';
+
+    questions.forEach(function(q, i){
+      var isCorrect = false;
+      var userAnswer = '';
+      var correctAnswer = '';
+
+      if (q.type === 'mc'){
+        userAnswer = answers[i] !== null ? q.choices[answers[i]] : 'No answer';
+        correctAnswer = q.choices[q.correct];
+        isCorrect = answers[i] === q.correct;
+      } else if (q.type === 'tf'){
+        userAnswer = answers[i] !== null ? (answers[i] === 1 ? 'True' : 'False') : 'No answer';
+        correctAnswer = q.correct ? 'True' : 'False';
+        isCorrect = answers[i] === (q.correct ? 1 : 0);
+      } else if (q.type === 'match'){
+        var ans = answers[i] || [];
+        var allCorrect = true;
+        var parts = [];
+        q.terms.forEach(function(term, j){
+          var selected = ans[j] !== null && ans[j] !== undefined ? q.options[ans[j]] : '—';
+          parts.push(term + ' → ' + selected);
+          if (ans[j] !== q.correct[j]) allCorrect = false;
+        });
+        userAnswer = parts.join('; ');
+        correctAnswer = q.terms.map(function(term, j){ return term + ' → ' + q.options[q.correct[j]]; }).join('; ');
+        isCorrect = allCorrect;
+      }
+
+      if (isCorrect) score++;
+
+      reviewHtml += '<div class="review-item ' + (isCorrect ? 'correct' : 'incorrect') + '">';
+      reviewHtml += '<div class="review-status">' + (isCorrect ? '✓ Correct' : '✗ Incorrect') + '</div>';
+      reviewHtml += '<div class="question-text" style="font-size:1rem;margin-bottom:8px;">' + escapeHtml(q.question) + '</div>';
+      reviewHtml += '<div class="review-answer"><strong>Your answer:</strong> ' + escapeHtml(userAnswer) + '</div>';
+      if (!isCorrect){
+        reviewHtml += '<div class="review-answer"><strong>Correct answer:</strong> ' + escapeHtml(correctAnswer) + '</div>';
+      }
+      reviewHtml += '<div class="review-answer" style="margin-top:8px;">' + escapeHtml(q.explanation) + '</div>';
+      reviewHtml += '</div>';
+    });
+
+    var pct = Math.round((score / TOTAL) * 100);
+    var passed = pct >= PASS_PCT;
+
+    var html = '<div class="exam-card results-hero">';
+    html += '<div class="pass-badge ' + (passed ? 'pass' : 'fail') + '">' + (passed ? '🎉 Passed' : 'Keep learning') + '</div>';
+    html += '<div class="score-ring-wrap">';
+    html += '<svg viewBox="0 0 120 120" aria-hidden="true">';
+    html += '<circle cx="60" cy="60" r="52" stroke="var(--line)" stroke-width="10" fill="none"/>';
+    html += '<circle cx="60" cy="60" r="52" stroke="' + (passed ? 'var(--teal)' : 'var(--amber)') + '" stroke-width="10" fill="none"';
+    html += ' stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="' + (326.7 - (pct / 100) * 326.7) + '" transform="rotate(-90 60 60)"/>';
+    html += '</svg>';
+    html += '<div class="score-text"><span class="score-pct">' + pct + '%</span><span class="score-label">' + score + '/' + TOTAL + '</span></div>';
+    html += '</div>';
+    html += '<h2>' + (passed ? 'Great work!' : 'You scored ' + pct + '%') + '</h2>';
+    html += '<p>' + (passed ? 'You have a solid grasp of the fundamentals. Consider shadowing a mentor on a real customization or plugin task next.' : 'Review the highlighted questions below and revisit the related modules in the guide before trying again.') + '</p>';
+    html += '<button class="btn-exam btn-exam-primary" id="retryBtn" type="button">Retry exam</button>';
+    html += '<a class="btn-exam btn-exam-secondary" href="d365-crm-onboarding-guide.html">Back to guide</a>';
+    html += '</div>';
+    html += '<h3 style="margin-top:32px;">Review your answers</h3>';
+    html += reviewHtml;
+
+    resultsContainer.innerHTML = html;
+    container.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    startCard.style.display = 'none';
+    document.getElementById('examProgressLabel').textContent = score + '/' + TOTAL + ' \u00b7 ' + pct + '%';
+
+    document.getElementById('retryBtn').addEventListener('click', restartExam);
+
+    if (passed) fireConfetti();
+  }
+
+  function restartExam(){
+    current = 0;
+    answers = new Array(TOTAL).fill(null);
+    resultsContainer.style.display = 'none';
+    container.style.display = 'block';
+    startCard.style.display = 'none';
+    updateProgress();
+    renderQuestion(0);
+  }
+
+  function fireConfetti(){
+    var confetti = document.getElementById('confetti');
+    var colors = ['var(--teal)', 'var(--amber)', '#8fa3d9', '#fff'];
+    for (var i = 0; i < 60; i++){
+      var piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = Math.random() * 0.8 + 's';
+      piece.style.animationDuration = (1.8 + Math.random() * 1.2) + 's';
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      confetti.appendChild(piece);
+    }
+    setTimeout(function(){
+      confetti.innerHTML = '';
+    }, 3500);
+  }
+
+  function escapeHtml(text){
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  startBtn.addEventListener('click', function(){
+    startCard.style.display = 'none';
+    container.style.display = 'block';
+    updateProgress();
+    renderQuestion(0);
+  });
+})();
+
+</script>
+</body>
+</html>

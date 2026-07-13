@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D365 CRM Advanced Topics — Deployment, APIs & Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16213e;
+    --navy:#141a38;
+    --navy-2:#232f63;
+    --navy-3:#2c3a78;
+    --teal:#17b6a6;
+    --teal-dark:#0e8f82;
+    --amber:#f2a93b;
+    --paper:#f5f7fb;
+    --card:#ffffff;
+    --line:#e2e6f2;
+    --muted:#5c6480;
+    --radius:14px;
+    --font-display:'Space Grotesk','Segoe UI',sans-serif;
+    --font-body:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+    --font-mono:'IBM Plex Mono','Consolas','SFMono-Regular',monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display); line-height:1.15; margin:0 0 .5em 0;}
+  p{margin:0 0 1em 0;}
+  a{color:var(--teal-dark);}
+  img{max-width:100%; display:block; border-radius:10px;}
+  ul,ol{padding-left:1.25em;}
+  li{margin-bottom:.4em;}
+  code{font-family:var(--font-mono); font-size:.92em; background:#eef1f9; padding:.15em .4em; border-radius:5px;}
+
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px; border-radius:4px;}
+
+  /* ---------- layout shell ---------- */
+  .app-shell{display:flex; min-height:100vh;}
+
+  .sidebar{
+    width:280px; flex-shrink:0; background:linear-gradient(190deg,var(--navy),var(--navy-2));
+    color:#eef1fb; position:sticky; top:0; height:100vh; overflow-y:auto;
+    padding:26px 22px 22px; display:flex; flex-direction:column; gap:22px;
+    z-index:40;
+  }
+  .sidebar-brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{width:38px; height:38px; flex-shrink:0;}
+  .brand-text{font-family:var(--font-display); font-weight:700; font-size:1.05rem; line-height:1.2;}
+  .brand-text span{display:block; font-family:var(--font-mono); font-weight:400; font-size:.68rem; letter-spacing:.09em; text-transform:uppercase; color:#9db3e8; margin-top:2px;}
+
+  .side-nav{display:flex; flex-direction:column; gap:2px; font-size:.87rem;}
+  .side-nav a{
+    color:#c9d3ef; text-decoration:none; padding:8px 10px; border-radius:9px;
+    display:flex; align-items:center; gap:10px; transition:background .15s ease, color .15s ease;
+  }
+  .side-nav a:hover{background:rgba(255,255,255,.07); color:#fff;}
+  .side-nav a.active{background:rgba(23,182,166,.18); color:#fff;}
+  .side-nav .dot{
+    width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.25); flex-shrink:0;
+    box-shadow:0 0 0 3px rgba(255,255,255,.05);
+  }
+  .side-nav .dot.done{background:var(--teal); box-shadow:0 0 0 3px rgba(23,182,166,.25);}
+  .side-nav-label{
+    font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.1em; font-size:.66rem;
+    color:#8290bd; margin:6px 0 2px 10px;
+  }
+  .side-nav-divider{height:1px; background:rgba(255,255,255,.12); margin:8px 0;}
+
+  .reset-wrap{margin-top:auto; padding-top:10px;}
+  .ghost-btn{
+    font-family:var(--font-body); font-size:.8rem; color:#c9d3ef; background:transparent;
+    border:1px solid rgba(255,255,255,.22); padding:8px 14px; border-radius:20px; cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .ghost-btn:hover{background:rgba(255,255,255,.1); color:#fff;}
+  .ghost-btn.small{padding:5px 11px; font-size:.74rem;}
+  .reset-confirm{
+    margin-top:10px; font-size:.78rem; color:#c9d3ef; background:rgba(0,0,0,.18);
+    padding:10px; border-radius:10px; display:flex; flex-direction:column; gap:8px;
+  }
+  .reset-confirm.hidden{display:none;}
+  .reset-confirm-btns{display:flex; gap:8px;}
+
+  .mobile-topbar{display:none;}
+  .mobile-nav-toggle{
+    background:var(--navy); color:#fff; border:none; width:42px; height:42px; border-radius:10px;
+    font-size:1.2rem; cursor:pointer; flex-shrink:0;
+  }
+
+  .content{flex:1; min-width:0;}
+  .content-inner{max-width:880px; margin:0 auto; padding:0 28px 90px;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 55%,var(--navy-3) 100%);
+    color:#fff; padding:52px 28px 40px; position:relative; overflow:hidden;
+  }
+  .hero-inner{max-width:880px; margin:0 auto; position:relative; z-index:2;}
+  .hero-eyebrow{
+    font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem;
+    color:var(--teal); margin-bottom:14px; display:block;
+  }
+  .hero h1{font-size:2.3rem; max-width:16ch; margin-bottom:.3em;}
+  .hero p.lead{color:#c9d3ef; max-width:52ch; font-size:1.05rem;}
+  .hero-pipeline{width:100%; height:auto; margin:26px 0 10px; opacity:.95;}
+  .hero-progress{
+    position:fixed; top:18px; right:18px; z-index:100;
+    display:flex; align-items:center; gap:14px;
+    background:linear-gradient(135deg,var(--navy),var(--navy-2));
+    border:1px solid rgba(255,255,255,.14); border-radius:16px; padding:12px 16px; max-width:360px;
+    box-shadow:0 8px 24px rgba(20,26,56,.35);
+  }
+  .progress-ring-label{font-family:var(--font-mono); font-size:.9rem; color:#fff;}
+  .progress-ring-label small{display:block; color:#9db3e8; font-size:.72rem; margin-top:2px;}
+
+  .completion-banner{
+    max-width:880px; margin:0 auto; padding:14px 20px; background:var(--teal); color:#042f2a;
+    border-radius:12px; font-weight:600; text-align:center; position:relative; z-index:2; margin-top:18px;
+  }
+  .completion-banner.hidden{display:none;}
+
+  /* ---------- intro / how-to ---------- */
+  .intro-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 28px; margin:-28px 0 32px; position:relative; z-index:3;
+    box-shadow:0 12px 30px -18px rgba(20,26,56,.35);
+  }
+  .intro-card h2{font-size:1.15rem; margin-bottom:.6em;}
+
+  /* ---------- module cards ---------- */
+  .module{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 30px 26px; margin-bottom:22px; opacity:0; transform:translateY(14px);
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .module.revealed{opacity:1; transform:translateY(0);}
+  .module.is-complete{border-color:var(--teal);}
+  .module-head{display:flex; align-items:flex-start; gap:14px; margin-bottom:18px; flex-wrap:wrap;}
+  .module-num{
+    font-family:var(--font-mono); font-size:.85rem; color:var(--teal-dark); background:#e6f8f6;
+    padding:4px 10px; border-radius:8px; flex-shrink:0; margin-top:4px;
+  }
+  .module-head h2{font-size:1.4rem; flex:1; min-width:200px;}
+  .badge{
+    font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:20px;
+    white-space:nowrap; margin-top:5px;
+  }
+  .module-body h3{font-size:1.05rem; margin-top:1.6em;}
+  .module-body h3:first-child{margin-top:0;}
+  .module-body h4.sub{font-size:.92rem; margin-top:1.2em; color:var(--navy-2);}
+  .module-foot{margin-top:22px; padding-top:18px; border-top:1px solid var(--line);}
+  .complete-check{display:flex; align-items:center; gap:10px; cursor:pointer; font-size:.92rem; color:var(--muted); user-select:none;}
+  .complete-check input{width:18px; height:18px; accent-color:var(--teal); cursor:pointer;}
+  .module.is-complete .complete-check{color:var(--teal-dark); font-weight:600;}
+
+  .callout{
+    background:#fbf5e9; border-left:4px solid var(--amber); border-radius:6px;
+    padding:12px 16px; font-size:.92rem; margin:16px 0;
+  }
+  .callout strong{color:#7a5510;}
+  .callout.danger{background:#fff5f5; border-left-color:#d93a3a;}
+  .callout.danger strong{color:#b42318;}
+
+  /* ---------- tables ---------- */
+  .table-wrap{overflow-x:auto; margin:16px 0;}
+  table{width:100%; border-collapse:collapse; font-size:.9rem;}
+  th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); background:#f8f9fd;}
+  tr:last-child td{border-bottom:none;}
+
+  /* ---------- code ---------- */
+  .code-block{background:#0f1530; border-radius:10px; margin:16px 0; overflow:hidden;}
+  .code-label{
+    font-family:var(--font-mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em;
+    color:#8fa3d9; padding:8px 16px; border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .code-block pre{margin:0; padding:16px; overflow-x:auto;}
+  .code-block code{background:none; padding:0; color:#dce7ff; font-size:.82rem; line-height:1.55;}
+
+  /* ---------- diagrams ---------- */
+  .diagram-wrap{background:#fbfcff; border:1px solid var(--line); border-radius:12px; padding:18px; margin:18px 0; overflow-x:auto;}
+  .diagram-wrap svg{width:100%; min-width:560px; height:auto; display:block;}
+  .diagram-caption{font-size:.8rem; color:var(--muted); margin-top:10px; text-align:center;}
+  figure{margin:16px 0;}
+  figure img{border:1px solid var(--line);}
+  figcaption{font-size:.8rem; color:var(--muted); margin-top:8px;}
+
+  /* ---------- app cards grid ---------- */
+  .card-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin:16px 0;}
+  .app-card{border:1px solid var(--line); border-radius:10px; padding:16px;}
+  .app-card h4{font-size:.98rem; margin-bottom:.4em;}
+  .app-card p{font-size:.86rem; color:var(--muted); margin-bottom:.6em;}
+  .app-card ul{font-size:.83rem; padding-left:1.1em; margin:0;}
+
+  /* ---------- glossary ---------- */
+  .glossary-tools{display:flex; flex-direction:column; gap:14px; margin-bottom:20px;}
+  .glossary-search{
+    font-family:var(--font-body); font-size:.95rem; padding:11px 16px; border-radius:10px;
+    border:1px solid var(--line); width:100%;
+  }
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    font-family:var(--font-mono); font-size:.72rem; padding:6px 13px; border-radius:20px;
+    border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer;
+  }
+  .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .term-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;}
+  .term-card{border:1px solid var(--line); border-radius:10px; padding:13px 15px;}
+  .term-card .term-cat{font-family:var(--font-mono); font-size:.64rem; text-transform:uppercase; letter-spacing:.07em; color:var(--teal-dark);}
+  .term-card h4{font-size:.92rem; margin:.3em 0 .3em;}
+  .term-card p{font-size:.82rem; color:var(--muted); margin:0;}
+  .no-results{color:var(--muted); font-size:.9rem; padding:20px 0; display:none;}
+
+  /* ---------- resources ---------- */
+  .resource-group{margin-bottom:22px;}
+  .resource-group h3{font-size:1rem;}
+  .resource-list{list-style:none; padding:0; margin:0;}
+  .resource-list li{
+    padding:10px 0; border-bottom:1px solid var(--line); font-size:.9rem; display:flex; gap:10px; align-items:baseline;
+  }
+  .resource-list li:last-child{border-bottom:none;}
+  .resource-list a{font-weight:600; text-decoration:none;}
+  .resource-list a:hover{text-decoration:underline;}
+  .resource-list span{color:var(--muted); font-size:.84rem;}
+
+  footer.site-footer{
+    text-align:center; padding:34px 20px 10px; color:var(--muted); font-size:.85rem;
+  }
+  footer.site-footer a{color:var(--muted);}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:880px){
+    .sidebar{
+      position:fixed; left:-300px; top:0; width:280px; height:100vh; transition:left .25s ease; box-shadow:0 0 0 100vmax rgba(0,0,0,0);
+    }
+    .sidebar.open{left:0; box-shadow:0 0 0 100vmax rgba(10,14,30,.55);}
+    .mobile-topbar{
+      display:flex; align-items:center; gap:14px; position:sticky; top:0; z-index:30;
+      background:var(--navy); color:#fff; padding:12px 18px;
+    }
+    .mobile-topbar .mt-title{font-family:var(--font-display); font-weight:600; font-size:.95rem;}
+    .content-inner{padding:0 18px 70px;}
+    .hero{padding:36px 18px 30px;}
+    .hero h1{font-size:1.7rem;}
+    .intro-card{margin-top:-20px; padding:20px;}
+    .module{padding:22px 20px 20px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .module{transition:none; opacity:1; transform:none;}
+    .pulse-dot{display:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  @media print{
+    .sidebar,.mobile-topbar,.module-foot,.reset-wrap{display:none;}
+    .module{break-inside:avoid; box-shadow:none;}
+  }
+
+  /* ---------- exam cta ---------- */
+  .exam-cta{background:linear-gradient(135deg,#f8f9fd 0%,#eef1f9 100%);}
+  .exam-cta .module-body p{max-width:60ch;}
+  .btn{
+    font-family:var(--font-body); font-size:.95rem; font-weight:600; padding:12px 22px; border-radius:10px;
+    border:none; cursor:pointer; transition:all .15s ease; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary{background:var(--teal); color:#fff;}
+  .btn-primary:hover{background:var(--teal-dark);}
+
+  /* ---------- exam-specific styles ---------- */
+  .exam-view{display:none;}
+  .exam-view.active{display:block;}
+  .guide-view{display:block;}
+  .guide-view.hidden{display:none;}
+
+  .exam-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:32px; margin:28px 0; box-shadow:0 12px 30px -18px rgba(20,26,56,.35);
+    position:relative;
+  }
+  .question-header{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .question-counter{
+    font-family:var(--font-mono); font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--muted); background:#f8f9fd; padding:6px 12px; border-radius:20px;
+  }
+  .question-text{font-size:1.15rem; font-weight:600; margin-bottom:22px;}
+  .choices{display:flex; flex-direction:column; gap:10px;}
+  .choice{
+    display:flex; align-items:flex-start; gap:12px;
+    border:1px solid var(--line); border-radius:10px; padding:14px 16px;
+    cursor:pointer; transition:all .15s ease;
+  }
+  .choice:hover{border-color:var(--teal-dark); background:#f8fdfc;}
+  .choice.selected{border-color:var(--teal); background:#e6f8f6;}
+  .choice.correct{border-color:var(--teal); background:#e6f8f6;}
+  .choice.incorrect{border-color:#d93a3a; background:#fff5f5;}
+  .choice input[type="radio"], .choice input[type="checkbox"]{
+    width:18px; height:18px; accent-color:var(--teal); margin-top:2px; flex-shrink:0;
+  }
+  .choice-label{font-size:.96rem; line-height:1.45;}
+  .matching-row{display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;}
+  .matching-term{flex:1; min-width:140px; font-weight:600; font-size:.95rem;}
+  .matching-select{
+    flex:1; min-width:180px; font-family:var(--font-body); font-size:.95rem;
+    padding:10px 12px; border-radius:8px; border:1px solid var(--line); background:#fff;
+  }
+  .matching-select.correct{border-color:var(--teal); background:#e6f8f6;}
+  .matching-select.incorrect{border-color:#d93a3a; background:#fff5f5;}
+  .nav-btns{
+    display:flex; justify-content:space-between; align-items:center; margin-top:28px; gap:12px;
+  }
+  .btn-exam{
+    font-family:var(--font-body); font-size:.95rem; font-weight:600; padding:12px 22px; border-radius:10px;
+    border:none; cursor:pointer; transition:all .15s ease; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-exam-primary{background:var(--teal); color:#fff;}
+  .btn-exam-primary:hover{background:var(--teal-dark);}
+  .btn-exam-secondary{background:#eef1f9; color:var(--ink);}
+  .btn-exam-secondary:hover{background:#e2e6f2;}
+  .btn-exam:disabled{opacity:.5; cursor:not-allowed;}
+  .results-hero{text-align:center; padding:40px 20px;}
+  .score-ring-wrap{width:140px; height:140px; margin:0 auto 24px; position:relative;}
+  .score-ring-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
+  .score-text{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:700;
+  }
+  .score-pct{font-size:2rem; line-height:1;}
+  .score-label{font-family:var(--font-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-top:4px;}
+  .pass-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-mono); font-size:.8rem; text-transform:uppercase; letter-spacing:.06em;
+    padding:8px 16px; border-radius:20px; margin-bottom:16px;
+  }
+  .pass-badge.pass{background:#e6f8f6; color:var(--teal-dark);}
+  .pass-badge.fail{background:#fff5f5; color:#b42318;}
+  .review-item{border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:12px;}
+  .review-item.correct{border-left:4px solid var(--teal);}
+  .review-item.incorrect{border-left:4px solid #d93a3a;}
+  .review-status{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px;}
+  .review-answer{font-size:.9rem; color:var(--muted);}
+  .confetti{position:fixed; inset:0; pointer-events:none; z-index:200; overflow:hidden;}
+  .confetti-piece{
+    position:absolute; width:10px; height:10px; background:var(--teal); opacity:0;
+    animation:confetti-fall 2.5s ease-out forwards;
+  }
+  @keyframes confetti-fall{
+    0%{transform:translateY(-20px) rotate(0deg); opacity:1;}
+    100%{transform:translateY(100vh) rotate(720deg); opacity:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <svg class="brand-mark" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="29" r="5" fill="var(--teal)"/>
+        <circle cx="19" cy="9" r="5" fill="var(--amber)"/>
+        <circle cx="30" cy="29" r="5" fill="var(--teal)"/>
+        <path d="M8 29 L19 9 L30 29" stroke="#8fa3d9" stroke-width="2" fill="none"/>
+      </svg>
+      <div class="brand-text">CRM Advanced Topics<span>Dynamics 365 Path</span></div>
+    </div>
+
+    <nav class="side-nav" aria-label="Module navigation">
+      <span class="side-nav-label">Build &amp; automate</span>
+      <a href="#module-1" data-module="1"><span class="dot"></span>1. Custom actions &amp; APIs</a>
+      <a href="#module-2" data-module="2"><span class="dot"></span>2. Power Automate deep dive</a>
+      <a href="#module-3" data-module="3"><span class="dot"></span>3. Advanced customization</a>
+
+      <span class="side-nav-label">Govern &amp; connect</span>
+      <a href="#module-4" data-module="4"><span class="dot"></span>4. Security model in practice</a>
+      <a href="#module-5" data-module="5"><span class="dot"></span>5. Data integration &amp; migration</a>
+
+      <span class="side-nav-label">Operate &amp; ship</span>
+      <a href="#module-6" data-module="6"><span class="dot"></span>6. Monitoring, debugging &amp; performance</a>
+      <a href="#module-7" data-module="7"><span class="dot"></span>7. Application lifecycle management</a>
+      <a href="#module-8" data-module="8"><span class="dot"></span>8. Solution lifecycle &amp; deployment</a>
+
+      <div class="side-nav-divider"></div>
+      <a href="#glossary">Glossary of terms</a>
+      <a href="#resources">Official resources</a>
+    </nav>
+
+    <div class="reset-wrap">
+      <button class="ghost-btn" id="resetProgressBtn" type="button">Reset progress</button>
+      <div class="reset-confirm hidden" id="resetConfirm">
+        <span>Clear every checkmark? This can't be undone.</span>
+        <div class="reset-confirm-btns">
+          <button class="ghost-btn small" id="resetYes" type="button">Yes, reset</button>
+          <button class="ghost-btn small" id="resetNo" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="content">
+
+    <div class="mobile-topbar">
+      <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open module navigation">&#9776;</button>
+      <span class="mt-title">CRM Advanced Topics</span>
+    </div>
+
+    <header class="hero">
+      <div class="hero-inner">
+        <span class="hero-eyebrow">Internal training guide &middot; Dynamics 365 CRM team &middot; Level 2</span>
+        <h1>Advanced Dynamics 365 CRM: Deployment, APIs &amp; Operations</h1>
+        <p class="lead">Eight deep-dive modules on how customizations actually ship, integrate, and stay healthy in production &mdash; the topics that separate "I can use CRM" from "I can own CRM."</p>
+
+        <svg class="hero-pipeline" viewBox="0 0 900 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path id="pulsePath" d="M20,80 C120,20 180,95 280,55 C380,15 420,90 520,50 C620,10 660,85 760,45 C800,30 830,40 880,30" stroke="rgba(255,255,255,.22)" stroke-width="2" fill="none"/>
+          <circle cx="20" cy="80" r="6" fill="var(--teal)"/>
+          <circle cx="280" cy="55" r="6" fill="var(--amber)"/>
+          <circle cx="520" cy="50" r="6" fill="var(--teal)"/>
+          <circle cx="760" cy="45" r="6" fill="var(--amber)"/>
+          <circle cx="880" cy="30" r="7" fill="#fff"/>
+          <circle r="5" fill="#fff" class="pulse-dot">
+            <animateMotion dur="7s" repeatCount="indefinite" path="M20,80 C120,20 180,95 280,55 C380,15 420,90 520,50 C620,10 660,85 760,45 C800,30 830,40 880,30"/>
+          </circle>
+        </svg>
+
+        <div class="hero-progress" id="guideProgress">
+          <svg width="64" height="64" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.18)" stroke-width="10" fill="none"/>
+              <circle id="progressRingFg" cx="60" cy="60" r="52" stroke="var(--teal)" stroke-width="10" fill="none"
+                stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+                transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="progress-ring-label" id="progressLabel">0 / 8 modules &middot; 0%<small>Saved automatically as you go</small></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-inner guide-view" id="guideView">
+
+      <div class="completion-banner hidden" id="completionBanner">
+        🎉 All 8 modules checked off &mdash; you've covered the advanced path. Ask your mentor about shadowing a real deployment.
+      </div>
+
+      <section class="intro-card">
+        <h2>How to use this guide</h2>
+        <p>This is a follow-on to the core onboarding guide, and it assumes you're already comfortable with Dataverse tables, forms, business rules, and basic plugins. Rather than skim a wide list of topics, this guide goes deep on eight areas that matter most once you start shipping real changes: how custom logic gets exposed as an API, how automation is built to survive failure, how security is actually enforced, how data gets in and out, and how solutions move between environments.</p>
+        <p>Work through the modules in order down the left &mdash; the first three (custom APIs, Power Automate, and advanced customization) are about <strong>building</strong> things; the next two (security and data integration) are about <strong>governing and connecting</strong> what you built; the last three (monitoring, ALM architecture, and solution lifecycle) are about <strong>operating and shipping</strong> it for real. Check a module off once you're comfortable enough to explain it to someone else, not just recognize the words. Progress saves automatically. When you're ready, the 16-question exam at the bottom checks retention across all eight modules.</p>
+      </section>
+
+      <!-- ================= MODULE 1 ================= -->
+      <section class="module" id="module-1" data-module-id="1">
+        <div class="module-head">
+          <span class="module-num">01</span>
+          <h2>Custom actions &amp; APIs</h2>
+          <span class="badge">APIs</span>
+        </div>
+        <div class="module-body">
+          <p>Sometimes a piece of business logic needs to be callable from more than one place &mdash; a form script, a flow, and an external system all need to run the same "approve this quote" operation. Rather than duplicate that logic three times, you expose it once as a message that anything can call.</p>
+
+          <h3>Bound actions vs. unbound actions</h3>
+          <p>A <strong>bound</strong> action or function is attached to a specific table (and often a specific record), the way a method is attached to an object. An <strong>unbound</strong> one stands alone, not tied to any table &mdash; closer to a static utility function.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Aspect</th><th>Bound</th><th>Unbound</th></tr>
+              <tr><td>Tied to a table?</td><td>Yes &mdash; operates on a specific entity or entity collection</td><td>No</td></tr>
+              <tr><td>Called via Web API as</td><td><code>/api/data/v9.2/accounts(id)/Microsoft.Dynamics.CRM.new_ApproveAccount</code></td><td><code>/api/data/v9.2/new_SendDailyDigest</code></td></tr>
+              <tr><td>Typical use</td><td>An operation naturally scoped to one record, e.g. "escalate this case"</td><td>A general-purpose operation with no natural record owner, e.g. "recalculate exchange rates"</td></tr>
+            </table>
+          </div>
+
+          <h3>Custom action vs. custom API vs. plugin</h3>
+          <p>All three run server-side logic, but they solve different problems. A plugin reacts to something that's already happening (a Create, an Update); a custom action or custom API is something you deliberately invoke on demand.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Option</th><th>Triggered by</th><th>Best for</th></tr>
+              <tr><td>Plugin (event handler)</td><td>A platform event: Create, Update, Delete, Associate, etc.</td><td>Enforcing a rule that must always apply, no matter how the record changed</td></tr>
+              <tr><td>Custom action</td><td>Explicit invocation from a workflow, a button, JavaScript, or a flow</td><td>A reusable, no-code-composable operation, quick to build via the classic UI designer</td></tr>
+              <tr><td>Custom API</td><td>Explicit invocation, same as an action, but backed by your own plugin class</td><td>Anything needing real code logic, strong typing of parameters, and better performance than an action's XAML-driven workflow</td></tr>
+            </table>
+          </div>
+          <p>In modern development, <strong>Custom API</strong> has mostly replaced custom actions for new work &mdash; it's faster (no workflow interpreter overhead), fully code-defined, and still callable from everywhere an action was. Custom actions still show up often in older solutions.</p>
+
+          <h3>Custom API: overview &amp; creation process</h3>
+          <p>A custom API is a message definition (its name, whether it's bound, its parameters) paired with a plugin class that implements the actual logic.</p>
+          <ol>
+            <li>In the maker portal, go to your solution and choose <strong>New → Automation → Custom API</strong>.</li>
+            <li>Name it with your publisher prefix (e.g. <code>new_ApproveQuote</code>), choose bound/unbound, and pick the bound entity if applicable.</li>
+            <li>Add <strong>Custom API Request Parameters</strong> for each input, and <strong>Custom API Response Properties</strong> for each output &mdash; each gets a name and a type (String, EntityReference, Boolean, and so on).</li>
+            <li>Write a plugin class implementing <code>IPlugin</code> that reads the request parameters off <code>IPluginExecutionContext.InputParameters</code> and writes results to <code>OutputParameters</code>.</li>
+            <li>Register the plugin step against your Custom API's message name, same as any other plugin step.</li>
+          </ol>
+
+          <h3>Input &amp; output parameters</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Field</th><th>Purpose</th></tr>
+              <tr><td>Unique name</td><td>The message name used to call it &mdash; must include your publisher prefix</td></tr>
+              <tr><td>Is function</td><td>Functions are read-only and callable via GET (safe to cache); actions can write data and use POST</td></tr>
+              <tr><td>Is private</td><td>If true, only callable internally (e.g. from a workflow/plugin), not exposed to external Web API callers</td></tr>
+              <tr><td>Allowed custom processing step type</td><td>Whether other plugins can hook into this API's own pipeline (None / Async only / Sync and async)</td></tr>
+              <tr><td>Request/Response parameters</td><td>Strongly typed inputs and outputs, each with a logical name and a type</td></tr>
+            </table>
+          </div>
+
+          <h3>Calling it from every direction</h3>
+          <p>The whole point of a custom action or custom API is that the same operation is reachable from anywhere:</p>
+
+          <div class="code-block">
+            <div class="code-label">C# &middot; calling from a plugin, via IOrganizationService</div>
+            <pre><code>var request = new OrganizationRequest("new_ApproveQuote")
+{
+    ["QuoteId"] = new EntityReference("quote", quoteId),
+    ["ApprovedBy"] = context.UserId.ToString()
+};
+OrganizationResponse response = service.Execute(request);
+bool wasApproved = (bool)response["Approved"];</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">JavaScript &middot; calling from a form script via Xrm.WebApi</div>
+            <pre><code>var request = {
+    QuoteId: { entityType: "quote", id: quoteId },
+    ApprovedBy: Xrm.Utility.getGlobalContext().userSettings.userId,
+    getMetadata: function () {
+        return {
+            boundParameter: null,
+            parameterTypes: {
+                QuoteId: { typeName: "mscrm.crmbaseentity", structuralProperty: 5 },
+                ApprovedBy: { typeName: "Edm.String", structuralProperty: 1 }
+            },
+            operationType: 0,
+            operationName: "new_ApproveQuote"
+        };
+    }
+};
+Xrm.WebApi.online.execute(request).then(function (response) {
+    return response.json();
+}).then(function (result) {
+    console.log("Approved:", result.Approved);
+});</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">Power Automate &middot; Perform an unbound action / HTTP action</div>
+            <pre><code>{
+  "action": "Perform an unbound action",
+  "actionName": "new_ApproveQuote",
+  "body": {
+    "QuoteId": { "@odata.type": "Microsoft.Dynamics.CRM.quote", "quoteid": "@{triggerOutputs()?['body/quoteid']}" },
+    "ApprovedBy": "@{outputs('Get_my_profile')?['body/id']}"
+  }
+}</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-label">HTTP &middot; calling from an external app via the Web API</div>
+            <pre><code>POST https://yourorg.crm.dynamics.com/api/data/v9.2/new_ApproveQuote
+Authorization: Bearer &lt;access_token&gt;
+Content-Type: application/json
+
+{
+  "QuoteId": { "@odata.type": "Microsoft.Dynamics.CRM.quote", "quoteid": "3d2f1a8e-..." },
+  "ApprovedBy": "a1b2c3d4-..."
+}</code></pre>
+          </div>
+
+          <div class="callout"><strong>Design tip:</strong> put the logic in exactly one custom API, then have the form script, the flow, and the ribbon button all call that same API instead of each re-implementing "approve" slightly differently. When the approval rule changes, you fix it in one place.</div>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/custom-api" target="_blank" rel="noopener">Learn more: Create custom APIs (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/custom-actions" target="_blank" rel="noopener">Custom actions overview (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="1"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 2 ================= -->
+      <section class="module" id="module-2" data-module-id="2">
+        <div class="module-head">
+          <span class="module-num">02</span>
+          <h2>Power Automate deep dive</h2>
+          <span class="badge">Automation</span>
+        </div>
+        <div class="module-body">
+          <p>You've seen the basics of flows before; this module is about building ones that survive contact with real data &mdash; concurrent runs, transient failures, and flows that call other flows.</p>
+
+          <h3>The four flow shapes</h3>
+          <div class="card-grid">
+            <div class="app-card">
+              <h4>Automated</h4>
+              <p>Fires on a Dataverse (or other connector) trigger &mdash; a row created, updated, or deleted. No human involved.</p>
+            </div>
+            <div class="app-card">
+              <h4>Instant</h4>
+              <p>Fires when a user presses a button, from a model-driven app command bar, a canvas app, or the mobile app.</p>
+            </div>
+            <div class="app-card">
+              <h4>Scheduled</h4>
+              <p>Fires on a recurrence (hourly, nightly, weekly) with no external trigger at all &mdash; good for batch cleanup or digest emails.</p>
+            </div>
+            <div class="app-card">
+              <h4>Business process flow trigger</h4>
+              <p>Fires when a record moves into a specific BPF stage &mdash; useful for kicking off automation exactly when a process reaches a milestone.</p>
+            </div>
+          </div>
+
+          <h3>Dataverse triggers and actions</h3>
+          <p>The Dataverse connector's trigger, <strong>"When a row is added, modified or deleted,"</strong> can be scoped tightly: pick the table, the change type, a <strong>scope</strong> (Organization, Business unit, Parent: business unit, User), and, critically, a <strong>filtering column list</strong> so the flow only fires when a column you actually care about changes &mdash; not on every unrelated save.</p>
+          <p>The matching actions &mdash; <strong>Add a new row</strong>, <strong>Update a row</strong>, <strong>Get a row by ID</strong>, <strong>List rows</strong> (with OData filter/sort/select) &mdash; are your CRUD toolkit inside the flow designer, without writing a single HTTP call by hand.</p>
+
+          <h3>Scope, concurrency, and loops</h3>
+          <p>A <strong>Scope</strong> action groups a set of steps so you can attach one "configure run after" behavior to the whole group, instead of wiring error handling onto every single action.</p>
+          <p>By default, an <strong>Apply to each</strong> loop runs its iterations <strong>in parallel</strong> (up to 20 concurrently), which is fast but means iteration 3 might finish before iteration 1. Turning on <strong>Concurrency Control</strong> lets you either force strictly sequential processing (degree of parallelism = 1) or raise the parallel limit up to 50.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Setting</th><th>When to use it</th></tr>
+              <tr><td>Concurrency = 1 (sequential)</td><td>Iterations must run in order, or they write to a shared resource that can't handle parallel writes (e.g. incrementing a running total on one record)</td></tr>
+              <tr><td>Concurrency raised above 20</td><td>Independent iterations, high volume, and the downstream system can handle the burst (watch Dataverse API limits)</td></tr>
+              <tr><td>Default (20, parallel)</td><td>Most loops over independent records</td></tr>
+            </table>
+          </div>
+
+          <h3>Error handling and retries</h3>
+          <p>Every action has a built-in retry policy (default: 4 retries, exponential backoff, for a subset of transient errors) configurable per-action under the "..." menu → <strong>Settings</strong>. For your own error handling beyond the built-in retry, use <strong>"Configure run after"</strong> on a downstream action to make it run when the previous action <em>failed</em>, <em>timed out</em>, or was <em>skipped</em> &mdash; not just on success. That's how you build a "do X, and if it fails, log/notify/compensate" branch without a separate condition block.</p>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 780 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Error handling pattern: try action, run after success continues, run after failure sends notification">
+              <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" text-anchor="middle">
+                <rect x="20" y="55" width="180" height="42" rx="9" fill="#eef1f9" stroke="#b9c2e0"/>
+                <text x="110" y="80" fill="#16213e" font-weight="600">Update quote (Scope)</text>
+
+                <line x1="200" y1="65" x2="280" y2="35" stroke="var(--teal)" stroke-width="2"/>
+                <rect x="280" y="14" width="200" height="42" rx="9" fill="#e6f8f6" stroke="var(--teal)"/>
+                <text x="380" y="39" fill="#16213e" font-weight="600">on success → continue</text>
+
+                <line x1="200" y1="85" x2="280" y2="115" stroke="#d93a3a" stroke-width="2"/>
+                <rect x="280" y="95" width="240" height="42" rx="9" fill="#fff5f5" stroke="#d93a3a"/>
+                <text x="400" y="120" fill="#16213e" font-weight="600">on failure/timeout → notify + log</text>
+              </g>
+            </svg>
+            <p class="diagram-caption">"Configure run after" branches the flow based on the outcome of the previous step, not just a data condition.</p>
+          </div>
+
+          <h3>Calling custom APIs and HTTP actions</h3>
+          <p>To call a custom API or action from a flow, use the Dataverse connector's <strong>"Perform an unbound/bound action"</strong> (shown in <a href="#module-1">Module 1</a>), or for external systems, the generic <strong>HTTP</strong> action (premium) with a manually built request, or <strong>HTTP with Azure AD</strong> when the target needs an authenticated Azure AD token.</p>
+
+          <h3>Child flows and environment variables</h3>
+          <p>A <strong>child flow</strong> is a flow triggered only by another flow (trigger type: <strong>"When a Flow calls this Flow"</strong>, with typed inputs/outputs) &mdash; the flow equivalent of extracting a shared function so five parent flows don't duplicate the same ten steps. <strong>Environment variables</strong> hold configuration that differs by environment (a SharePoint site URL, an approver's email, a feature flag) as a solution component with a default value plus a per-environment override, so the same flow definition deploys unchanged from dev to production while pointing at different endpoints.</p>
+
+          <div class="callout"><strong>Gotcha:</strong> connection references (not raw connections) are what make a flow portable between environments. If a flow was built against a raw, hardcoded connection instead of a connection reference, it will fail silently after import until someone manually reconnects it &mdash; see <a href="#module-8">Module 8</a>'s deployment failures table.</div>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-automate/error-handling" target="_blank" rel="noopener">Learn more: Handle errors and exceptions (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-automate/flow-child-flows" target="_blank" rel="noopener">Child flows overview (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="2"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 3 ================= -->
+      <section class="module" id="module-3" data-module-id="3">
+        <div class="module-head">
+          <span class="module-num">03</span>
+          <h2>Advanced customization</h2>
+          <span class="badge">Customization</span>
+        </div>
+        <div class="module-body">
+          <p>Once you're past business rules and simple scripts, four tools cover almost everything else you'll reach for on the front end.</p>
+
+          <h3>Custom controls / PCF components</h3>
+          <p>The <strong>Power Apps Component Framework (PCF)</strong> lets you write a fully custom control &mdash; a rating widget, a map picker, a signature pad &mdash; in TypeScript, and drop it onto a field or a dataset (a grid/subgrid) the same way you'd add any standard control. Unlike a web resource bolted onto a form with JavaScript, a PCF control is a first-class, packaged solution component with its own lifecycle methods (<code>init</code>, <code>updateView</code>, <code>getOutputs</code>, <code>destroy</code>) and typed manifest.</p>
+          <div class="code-block">
+            <div class="code-label">XML &middot; PCF ControlManifest.Input.xml (excerpt)</div>
+            <pre><code>&lt;control namespace="Contoso" constructor="RatingControl" version="1.0.0" display-name-key="Rating Control"&gt;
+  &lt;property name="value" display-name-key="Value" of-type="Whole.None" usage="bound" required="true" /&gt;
+  &lt;resources&gt;
+    &lt;code path="index.ts" order="1" /&gt;
+  &lt;/resources&gt;
+&lt;/control&gt;</code></pre>
+          </div>
+          <p>Reach for a PCF control when a standard field or subgrid control can't express what the UI needs; reach for plain client scripting when you just need to react to events on standard controls.</p>
+
+          <h3>Client scripts: best practices &amp; <code>formContext</code></h3>
+          <p>Modern form scripts are written against the <strong>executionContext</strong> passed into every event handler, from which you get <code>formContext</code> &mdash; never the old global <code>Xrm.Page</code>, which breaks on multi-form scenarios like a Quick Create panel open alongside a main form.</p>
+          <div class="code-block">
+            <div class="code-label">JavaScript &middot; formContext pattern</div>
+            <pre><code>function onLoad(executionContext) {
+    var formContext = executionContext.getFormContext();
+    var statusControl = formContext.getControl("statuscode");
+    var creditLimit = formContext.getAttribute("creditlimit").getValue();
+
+    formContext.getAttribute("creditlimit").addOnChange(function (ctx) {
+        var fc = ctx.getFormContext();
+        fc.getControl("creditapprover").setVisible(fc.getAttribute("creditlimit").getValue() > 1000000);
+    });
+}</code></pre>
+          </div>
+          <ul>
+            <li>Namespace everything (e.g. <code>Contoso.Account.onLoad</code>) &mdash; never register a bare global function name, to avoid collisions across web resources.</li>
+            <li>Never hardcode a GUID, option set value, or environment URL &mdash; pull them from environment variables or a config table.</li>
+            <li>Always null-check a lookup or optionset attribute before reading <code>.getValue()</code> &mdash; an empty field returns <code>null</code>, not an empty object.</li>
+            <li>Keep heavy logic (queries, complex validation) server-side in a plugin; use client scripts for what the user needs to see change live.</li>
+          </ul>
+
+          <h3>Command bar customization beyond Ribbon Workbench</h3>
+          <p>The modern <strong>command bar designer</strong> (built into the maker portal) now handles a large share of what used to require Ribbon Workbench: adding/reordering/hiding buttons, and writing show/hide logic with <strong>Power Fx</strong> expressions directly in the designer instead of hand-built Display/Enable Rule XML.</p>
+          <div class="code-block">
+            <div class="code-label">Power Fx &middot; command bar visibility rule</div>
+            <pre><code>Or(
+    Self.Selected.Item.statuscode = 1,
+    LegacyCommandBarContext.SelectedRecordsIds.Count = 0
+)</code></pre>
+          </div>
+          <p>Ribbon Workbench is still the right tool for anything the modern designer doesn't yet expose &mdash; deep JavaScript-driven enable rules, custom parameters, or editing the classic web client ribbon on older solutions.</p>
+
+          <h3>Custom pages in model-driven apps</h3>
+          <p>A <strong>custom page</strong> is a canvas-app-authored page (built with the same Power Fx and drag-and-drop designer as a canvas app) embedded inside a model-driven app &mdash; used for a bespoke dashboard, a wizard-style multi-step form, or a layout the model-driven form designer simply can't produce. It's added to the app's sitemap or opened from a command, and it can read/write Dataverse data the same as any canvas app, but lives and deploys inside the model-driven app's solution.</p>
+
+          <div class="callout"><strong>Choosing between them:</strong> business rule → no-code field logic. Client script → form-level behavior standard controls can't do. PCF → a genuinely new control type. Custom page → a layout the form/view designer fundamentally can't produce. Reach for the simplest one that solves the problem; each step up costs more to build and maintain.</div>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-apps/developer/component-framework/overview" target="_blank" rel="noopener">Learn more: Power Apps component framework overview (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-apps/maker/model-driven-apps/model-app-page-overview" target="_blank" rel="noopener">Custom pages overview (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="3"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 4 ================= -->
+      <section class="module" id="module-4" data-module-id="4">
+        <div class="module-head">
+          <span class="module-num">04</span>
+          <h2>Security model in practice</h2>
+          <span class="badge">Security</span>
+        </div>
+        <div class="module-body">
+          <p>Dataverse security answers one question for every single record: can <em>this user</em> do <em>this action</em> to <em>this row</em>? The answer comes from layering four concepts on top of each other: where the user sits in the org (business unit), what privileges they hold (security role), who owns the record, and any one-off shares.</p>
+
+          <h3>Business units, security roles, and teams</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Business unit hierarchy: root business unit containing Sales and Support child business units, each with users and teams">
+              <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" text-anchor="middle">
+                <rect x="270" y="10" width="160" height="42" rx="9" fill="#eef1f9" stroke="#b9c2e0"/>
+                <text x="350" y="35" fill="#16213e" font-weight="600">Root business unit</text>
+
+                <line x1="350" y1="52" x2="180" y2="95" stroke="#c7cee6" stroke-width="2"/>
+                <line x1="350" y1="52" x2="520" y2="95" stroke="#c7cee6" stroke-width="2"/>
+
+                <rect x="100" y="95" width="160" height="42" rx="9" fill="#e6f8f6" stroke="var(--teal)"/>
+                <text x="180" y="120" fill="#16213e" font-weight="600">Sales (child BU)</text>
+
+                <rect x="440" y="95" width="160" height="42" rx="9" fill="#fbf5e9" stroke="var(--amber)"/>
+                <text x="520" y="120" fill="#16213e" font-weight="600">Support (child BU)</text>
+
+                <line x1="180" y1="137" x2="180" y2="170" stroke="#c7cee6" stroke-width="2"/>
+                <rect x="100" y="170" width="160" height="40" rx="8" fill="#fff" stroke="#b9c2e0"/>
+                <text x="180" y="194" fill="#16213e">Users + "Sales Rep" team</text>
+
+                <line x1="520" y1="137" x2="520" y2="170" stroke="#c7cee6" stroke-width="2"/>
+                <rect x="440" y="170" width="160" height="40" rx="8" fill="#fff" stroke="#b9c2e0"/>
+                <text x="520" y="194" fill="#16213e">Users + "Support" team</text>
+              </g>
+            </svg>
+            <p class="diagram-caption">Every user and team belongs to exactly one business unit; security roles grant privileges, business units scope how far those privileges reach.</p>
+          </div>
+          <p>A <strong>business unit (BU)</strong> is an organizational container used purely for security and reporting scope &mdash; not the same as a department in your HR system, though it's often modeled to match one. A <strong>security role</strong> is a named bundle of privileges (Create, Read, Write, Delete, Append, Assign, Share, per table) each with an access level. A <strong>team</strong> is a group of users that can itself own records and hold security roles, so a whole group gains access at once instead of assigning the role to each person individually.</p>
+
+          <h3>User-owned vs. team-owned records</h3>
+          <p>Most business tables are <strong>user- or team-owned</strong>, meaning every row has an <strong>Owner</strong> field (a user or a team) and access decisions key off that owner. A smaller set of tables (like most configuration/reference tables) are <strong>organization-owned</strong>, meaning there's no per-row owner and access is all-or-nothing across the org. Assigning a record to a team &mdash; instead of one person &mdash; is the standard pattern for shared queues (e.g. an unassigned Leads team) so any member can pick it up.</p>
+
+          <h3>The five access levels</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Level</th><th>Grants access to</th></tr>
+              <tr><td>None</td><td>Nothing &mdash; the privilege doesn't apply at all for this role</td></tr>
+              <tr><td>User</td><td>Only records the user themselves owns</td></tr>
+              <tr><td>Business Unit</td><td>Records owned by any user or team in the user's own business unit</td></tr>
+              <tr><td>Parent: Child Business Units</td><td>Records owned within the user's business unit and any of its child business units</td></tr>
+              <tr><td>Organization</td><td>Every record in the environment, regardless of owner or business unit</td></tr>
+            </table>
+          </div>
+          <p>Each privilege (Read, Write, Delete, and so on) gets its own access level within a role &mdash; it's entirely normal for a role to have <em>Organization</em> read but only <em>User</em> delete.</p>
+
+          <h3>Sharing and cascading behavior</h3>
+          <p><strong>Sharing</strong> grants access to a specific record for a specific user or team, layered on top of whatever their role already allows &mdash; useful for a one-off exception without changing anyone's role. Shares can be revoked individually and don't affect any other record. Separately, <strong>relationship behavior</strong> (Referential, Referential: Restrict Delete, Parental, Custom) controls whether actions like assign, share, and delete <em>cascade</em> down to related child records &mdash; a Parental relationship (like Opportunity → Opportunity Product) cascades sharing and deletes automatically; a plain Referential one does not.</p>
+
+          <h3>Column-level security</h3>
+          <p>Some fields need to be locked down tighter than the record they live on &mdash; a Social Security Number, a negotiated discount, a salary. <strong>Field security profiles</strong> handle exactly this: enable <em>Field Security</em> on the column itself, create a <strong>Field Security Profile</strong>, set that field's Read/Update/Create permission on the profile, and add the users or teams who should have that elevated access. Everyone outside the profile sees the field as blank or masked, even if their table-level security role would otherwise let them read the record.</p>
+
+          <div class="callout"><strong>Debugging tip:</strong> when a user says "I can't see a record I should be able to see," check in this order: (1) do they have the right privilege at all on their security role, (2) is the access level high enough given the record's owner and business unit, (3) is there a share that should exist but doesn't, (4) is a field security profile hiding specific columns even though the record itself is visible.</div>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-platform/admin/wp-security-cheat-sheet" target="_blank" rel="noopener">Learn more: Security concepts cheat sheet (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-platform/admin/field-level-security" target="_blank" rel="noopener">Field-level security (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="4"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 5 ================= -->
+      <section class="module" id="module-5" data-module-id="5">
+        <div class="module-head">
+          <span class="module-num">05</span>
+          <h2>Data integration &amp; migration</h2>
+          <span class="badge">Data</span>
+        </div>
+        <div class="module-body">
+          <p>Almost every CRM implementation eventually needs to talk to something outside Dataverse &mdash; a legacy system's one-time data load, a nightly sync with an ERP, or a real-time lookup from a portal. Everything in this module is about the same handful of tools serving different points on that spectrum.</p>
+
+          <h3>Dataverse Web API basics</h3>
+          <p>The <strong>Web API</strong> is Dataverse's RESTful, OData v4 endpoint &mdash; the same API the CRM web client itself calls under the hood, which means anything you can do in the UI is reachable programmatically.</p>
+          <div class="code-block">
+            <div class="code-label">HTTP &middot; retrieve a filtered, sorted list of accounts</div>
+            <pre><code>GET https://yourorg.crm.dynamics.com/api/data/v9.2/accounts
+    ?$select=name,revenue,telephone1
+    &amp;$filter=statecode eq 0 and revenue gt 1000000
+    &amp;$orderby=revenue desc
+    &amp;$top=25
+Authorization: Bearer &lt;access_token&gt;
+OData-MaxVersion: 4.0
+OData-Version: 4.0
+Accept: application/json</code></pre>
+          </div>
+          <p>Standard verbs map the way you'd expect: <code>GET</code> to retrieve, <code>POST</code> to create, <code>PATCH</code> to update, <code>DELETE</code> to delete. Authentication is OAuth 2.0 against Microsoft Entra ID (Azure AD) &mdash; you'll register an app registration and use client credentials for a service-to-service integration, or an interactive/on-behalf-of flow when a real user is involved.</p>
+
+          <h3>FetchXML vs. OData</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Aspect</th><th>FetchXML</th><th>OData query</th></tr>
+              <tr><td>Format</td><td>XML query language, Dataverse-specific</td><td>URL query parameters ($filter, $select, $orderby), REST-standard</td></tr>
+              <tr><td>Where it's used</td><td>Views, reports, RetrieveMultiple in plugins/code, XrmToolBox tools</td><td>Web API calls, Power Automate's built-in filter/select fields</td></tr>
+              <tr><td>Aggregation &amp; grouping</td><td>Full support (sum, count, group by) directly in the query</td><td>Limited without <code>$apply</code> (OData aggregation extension, more verbose)</td></tr>
+              <tr><td>Readability for simple filters</td><td>More verbose</td><td>More concise</td></tr>
+            </table>
+          </div>
+          <div class="code-block">
+            <div class="code-label">FetchXML &middot; same query as the Web API example above</div>
+            <pre><code>&lt;fetch top="25"&gt;
+  &lt;entity name="account"&gt;
+    &lt;attribute name="name" /&gt;
+    &lt;attribute name="revenue" /&gt;
+    &lt;attribute name="telephone1" /&gt;
+    &lt;order attribute="revenue" descending="true" /&gt;
+    &lt;filter type="and"&gt;
+      &lt;condition attribute="statecode" operator="eq" value="0" /&gt;
+      &lt;condition attribute="revenue" operator="gt" value="1000000" /&gt;
+    &lt;/filter&gt;
+  &lt;/entity&gt;
+&lt;/fetch&gt;</code></pre>
+          </div>
+
+          <h3>Importing data: dataflows, import wizard, SSIS/KingswaySoft</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Tool</th><th>Best for</th><th>Notes</th></tr>
+              <tr><td>Import Data Wizard</td><td>A quick, one-time CSV/Excel load done by a maker, no dev involved</td><td>Built into the maker portal; maps columns visually; limited transformation logic</td></tr>
+              <tr><td>Power Query dataflows</td><td>Recurring loads from many source types with real transformation steps</td><td>Same Power Query engine as Excel/Power BI; can write straight into Dataverse tables</td></tr>
+              <tr><td>SSIS + KingswaySoft</td><td>Large-scale, complex, repeatable ETL &mdash; the de facto standard for big legacy migrations</td><td>Third-party connector for SQL Server Integration Services; handles huge volumes, upserts, and complex entity relationships that the wizard can't</td></tr>
+              <tr><td>Configuration Migration Tool</td><td>Moving reference/config data (not transactional data) between environments</td><td>Free Microsoft tool, schema-driven, good for seeding a new environment with lookup values</td></tr>
+            </table>
+          </div>
+          <div class="callout"><strong>Migration tip:</strong> always load parent records before children (Accounts before Contacts before Opportunities) and disable unnecessary plugins/workflows during a bulk load, then re-enable and run any downstream automation deliberately afterward &mdash; otherwise you can trigger thousands of unwanted emails, flows, or plugin executions during the import itself.</div>
+
+          <h3>Integration patterns: synchronous vs. asynchronous</h3>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 820 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Synchronous integration: caller waits for response. Asynchronous integration: caller queues a message and continues, a separate process picks it up later">
+              <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" text-anchor="middle">
+                <text x="200" y="20" fill="#16213e" font-weight="600">Synchronous</text>
+                <rect x="60" y="35" width="120" height="40" rx="8" fill="#eef1f9" stroke="#b9c2e0"/><text x="120" y="59" fill="#16213e">Caller</text>
+                <rect x="260" y="35" width="120" height="40" rx="8" fill="#e6f8f6" stroke="var(--teal)"/><text x="320" y="59" fill="#16213e">External API</text>
+                <line x1="180" y1="48" x2="260" y2="48" stroke="#c7cee6" stroke-width="2" marker-end="url(#arrow1)"/>
+                <line x1="260" y1="65" x2="180" y2="65" stroke="#c7cee6" stroke-width="2" marker-end="url(#arrow1)"/>
+                <text x="220" y="90" font-size="10.5" fill="#5c6480">Caller blocks and waits for the response before continuing</text>
+
+                <text x="620" y="20" fill="#16213e" font-weight="600">Asynchronous</text>
+                <rect x="460" y="35" width="120" height="40" rx="8" fill="#eef1f9" stroke="#b9c2e0"/><text x="520" y="59" fill="#16213e">Caller</text>
+                <rect x="640" y="35" width="120" height="40" rx="8" fill="#fbf5e9" stroke="var(--amber)"/><text x="700" y="59" fill="#16213e">Queue / bus</text>
+                <line x1="580" y1="55" x2="640" y2="55" stroke="#c7cee6" stroke-width="2" marker-end="url(#arrow1)"/>
+                <text x="520" y="90" font-size="10.5" fill="#5c6480">Caller drops a message and moves on immediately</text>
+                <rect x="640" y="120" width="120" height="40" rx="8" fill="#fdeee6" stroke="#e08a4f"/><text x="700" y="144" fill="#16213e">Worker/consumer</text>
+                <line x1="700" y1="75" x2="700" y2="120" stroke="#c7cee6" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrow1)"/>
+                <text x="700" y="175" font-size="10.5" fill="#5c6480">Processed on its own schedule, independent of the caller</text>
+              </g>
+              <defs><marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#c7cee6"/></marker></defs>
+            </svg>
+          </div>
+          <p>Choose <strong>synchronous</strong> when the caller genuinely needs the result before it can continue (validating a payment before confirming an order). Choose <strong>asynchronous</strong> (a queue, a scheduled flow, an async plugin step) when the caller doesn't need to wait, when the downstream system is slow or unreliable, or when you want to protect the user's save operation from an external system's outage. Async plugin steps and Power Automate's own retry policy (<a href="#module-2">Module 2</a>) are the two most common asynchronous building blocks inside Dataverse itself.</p>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview" target="_blank" rel="noopener">Learn more: Web API overview (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/use-fetchxml-construct-query" target="_blank" rel="noopener">Build queries with FetchXML (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="5"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 6 ================= -->
+      <section class="module" id="module-6" data-module-id="6">
+        <div class="module-head">
+          <span class="module-num">06</span>
+          <h2>Monitoring, debugging &amp; performance</h2>
+          <span class="badge">Operations</span>
+        </div>
+        <div class="module-body">
+          <p>Shipping a change is only half the job &mdash; you also need to know when it breaks, and why, before a user tells you. This module is your troubleshooting toolkit.</p>
+
+          <h3>Plugin trace log and system jobs</h3>
+          <p>Every plugin execution can leave a trail. Turn it on under <strong>Settings → Administration → System Settings → Customization → Enable logging to plug-in trace log</strong> (set to <em>All</em> while actively debugging, <em>Exception</em> in steady-state production to limit noise), then read the results under <strong>Settings → Plug-in Trace Log</strong>, or with a tool like XrmToolBox's Plugin Trace Viewer for easier filtering. Each <code>ITracingService.Trace(...)</code> call you write in a plugin lands here, alongside the exception message and stack trace if it failed.</p>
+          <p><strong>System jobs</strong> (Settings → System Jobs) show every asynchronous operation &mdash; async plugin steps, workflows, bulk operations &mdash; with a status (Waiting, In Progress, Succeeded, Failed) and, for failures, the error message. This is your first stop when something "should have happened but didn't" and no user-facing error appeared, since async failures don't interrupt whoever triggered them.</p>
+
+          <h3>Power Automate run history</h3>
+          <p>Each flow keeps a run history showing every trigger fire, every action's inputs/outputs, and exactly where a run failed. A failed run can be resubmitted directly from its history (useful after fixing a downstream outage) without waiting for the trigger condition to happen again naturally. For flows that fail intermittently, check the <strong>trigger conditions</strong> and <strong>concurrency settings</strong> first &mdash; the most common "it worked when I tested it, then failed at 2am" causes are a race condition between parallel runs or a transient API throttling error that wasn't retried.</p>
+
+          <h3>Platform diagnostics and solution health</h3>
+          <p>The <strong>Power Platform admin center</strong> exposes environment-level health: API request counts against your license entitlement, storage consumption by table, and (for Dataverse) a built-in <strong>Solution Checker</strong> that statically analyzes your plugins and workflows for known anti-patterns (blocking synchronous calls, missing null checks, unbounded queries) before you even ship. Run Solution Checker as a normal part of finishing a solution, the same way you'd run a linter before a pull request.</p>
+
+          <h3>Common performance traps</h3>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Trap</th><th>Why it hurts</th><th>Fix</th></tr>
+              <tr><td>A view or subgrid with no filters on a huge table</td><td>Forces a large, unindexed scan every time the view loads</td><td>Add filters, limit columns, and use indexed columns in sort/filter</td></tr>
+              <tr><td>Synchronous plugins doing external HTTP calls</td><td>The user's save blocks on network latency they can't see or control</td><td>Move the call to an async plugin step or a Power Automate flow instead</td></tr>
+              <tr><td>Plugins without filtering attributes</td><td>Fires on every column change, not just the ones that matter, multiplying executions</td><td>Set filtering attributes on the step registration via the Plugin Registration Tool</td></tr>
+              <tr><td>Heavy business process flows with many stages/branches on every form load</td><td>Each active BPF adds evaluation overhead on load and save</td><td>Keep BPFs to the stages users actually need; retire ones nobody uses</td></tr>
+              <tr><td>Retrieving full column sets ($select omitted) on large queries</td><td>Pulls far more data over the wire than needed</td><td>Always specify only the columns you use, in FetchXML or $select</td></tr>
+              <tr><td>Nested loops calling the Web API per iteration</td><td>N+1 query pattern; hundreds of round trips instead of one batch</td><td>Use <code>$batch</code> requests or FetchXML with joins to fetch related data in one call</td></tr>
+            </table>
+          </div>
+
+          <div class="callout"><strong>Debugging habit:</strong> when something is "slow" rather than "broken," reproduce it while watching the Plugin Trace Log and the flow run history side by side with a stopwatch. Nine times out of ten, the slow part is a single synchronous external call or an unfiltered query, not "Dynamics being slow" in general.</div>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/logging-tracing" target="_blank" rel="noopener">Learn more: Logging and tracing (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-platform/alm/checker-api/overview" target="_blank" rel="noopener">Power Apps Solution Checker (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="6"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 7 ================= -->
+      <section class="module" id="module-7" data-module-id="7">
+        <div class="module-head">
+          <span class="module-num">07</span>
+          <h2>Application lifecycle management (ALM)</h2>
+          <span class="badge">Operations</span>
+        </div>
+        <div class="module-body">
+          <p>Everything in this guide &mdash; APIs, automation, customization, security, integrations, and monitoring &mdash; eventually has to move through a repeatable, low-drama release process. That process is ALM, and this module builds the architecture around it; <a href="#module-8">Module 8</a> then covers the concrete solution mechanics that run inside it.</p>
+
+          <h3>Environments and Dataverse architecture</h3>
+          <p>Zoom out from a single dev/test/prod chain and a mature setup usually looks like this: one environment per active developer or workstream (or a small shared dev pool), a build/integration environment where everyone's work merges before testing, a UAT/test environment for stakeholders, and production. Each environment has its own Dataverse database, its own storage capacity, and its own set of connections &mdash; nothing about data or connections carries over automatically; only solutions (and the config data you deliberately migrate) do.</p>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 900 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Environment architecture: multiple dev environments feeding a build environment, then test, then production">
+              <g font-family="IBM Plex Sans, sans-serif" font-size="12" text-anchor="middle" fill="#16213e">
+                <rect x="20" y="15" width="120" height="36" rx="8" fill="#e6f8f6" stroke="var(--teal)"/><text x="80" y="38">Dev (Alice)</text>
+                <rect x="20" y="60" width="120" height="36" rx="8" fill="#e6f8f6" stroke="var(--teal)"/><text x="80" y="83">Dev (Bilal)</text>
+                <rect x="20" y="105" width="120" height="36" rx="8" fill="#e6f8f6" stroke="var(--teal)"/><text x="80" y="128">Dev (shared)</text>
+
+                <line x1="140" y1="33" x2="270" y2="65" stroke="#c7cee6" stroke-width="2"/>
+                <line x1="140" y1="78" x2="270" y2="65" stroke="#c7cee6" stroke-width="2"/>
+                <line x1="140" y1="123" x2="270" y2="65" stroke="#c7cee6" stroke-width="2"/>
+
+                <rect x="270" y="45" width="140" height="42" rx="9" fill="#fbf5e9" stroke="var(--amber)"/><text x="340" y="70">Build / integration</text>
+
+                <line x1="410" y1="66" x2="530" y2="66" stroke="#c7cee6" stroke-width="2"/>
+                <rect x="530" y="45" width="140" height="42" rx="9" fill="#eef1f9" stroke="#b9c2e0"/><text x="600" y="70">Test / UAT</text>
+
+                <line x1="670" y1="66" x2="790" y2="66" stroke="#c7cee6" stroke-width="2"/>
+                <rect x="790" y="45" width="100" height="42" rx="9" fill="#fdeee6" stroke="#e08a4f"/><text x="840" y="70">Production</text>
+              </g>
+            </svg>
+          </div>
+
+          <h3>Pipelines in Power Platform</h3>
+          <p><strong>Power Platform Pipelines</strong> is Microsoft's built-in, low-code deployment tool: a maker with access clicks <strong>Deploy</strong> in their dev environment, picks a target stage, and the pipeline exports, packages, and imports the managed solution for them &mdash; with an approval gate if one's configured &mdash; without needing PowerShell, Azure DevOps, or admin-level access to the target environment. For teams needing more control (automated testing, code review gates, scheduled releases), the same export/import mechanics are driven by <strong>Azure DevOps</strong> or <strong>GitHub Actions</strong> pipelines using the <strong>Power Platform Build Tools</strong> / <code>pac</code> CLI instead.</p>
+          <div class="code-block">
+            <div class="code-label">Shell &middot; pac CLI, the command-line equivalent of a pipeline stage</div>
+            <pre><code>pac auth create --url https://yourorg-test.crm.dynamics.com
+pac solution export --name ContosoCRM --managed true --path ./out/ContosoCRM_managed.zip
+
+pac auth create --url https://yourorg-prod.crm.dynamics.com
+pac solution import --path ./out/ContosoCRM_managed.zip --async true</code></pre>
+          </div>
+
+          <h3>Solution segmentation strategy</h3>
+          <p>Don't ship one giant solution containing everything the org has ever built. Segment by <strong>ownership boundary and release cadence</strong>: a core solution for shared foundation components (tables, security roles) that changes rarely, and separate solutions per team or feature area (Sales customizations, Field Service customizations, Integrations) that each ship on their own schedule. Reference the core solution from the others rather than duplicating components into each.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Strategy</th><th>Pros</th><th>Cons</th></tr>
+              <tr><td>One monolithic solution</td><td>Simple to reason about early on</td><td>Every release touches everything; one team's change blocks another's; slow imports</td></tr>
+              <tr><td>Segmented by feature/team</td><td>Independent release cadence; smaller, faster, lower-risk deployments</td><td>Requires discipline around shared/core components and dependency management</td></tr>
+              <tr><td>Segmented by layer (data model vs. UI vs. logic)</td><td>Clean separation of concerns</td><td>Most changes touch more than one layer, so you're often deploying several solutions together anyway</td></tr>
+            </table>
+          </div>
+
+          <h3>Versioning and release notes</h3>
+          <p>Every solution carries a version number (Major.Minor.Build.Revision, e.g. <code>3.4.12.0</code>) that you bump on every export &mdash; treat it like semantic versioning: major for breaking changes, minor for new functionality, build/revision for patches and fixes. Pair every release with a short changelog (what changed, which tickets it closes, any manual post-import steps like reconnecting a flow) so that six months from now, someone can look at a production incident and know exactly what shipped and when.</p>
+
+          <div class="callout"><strong>Bringing it together:</strong> a healthy release, end to end, touches nearly every module in this guide: expose new logic through a custom API (Module 1), wire it into a flow with proper error handling (Module 2), keep the UI changes as simple as the problem allows (Module 3), lock it down with the right security roles (Module 4), validate any data migration steps (Module 5), watch the trace logs and run history after go-live (Module 6) &mdash; all shipped through a versioned pipeline (this module) built on top of the unmanaged-to-managed solution mechanics in <a href="#module-8">Module 8</a>.</div>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-platform/alm/pipelines" target="_blank" rel="noopener">Learn more: Power Platform pipelines (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-platform/alm/devops-build-tools" target="_blank" rel="noopener">Power Platform Build Tools for Azure DevOps (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="7"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= MODULE 8 ================= -->
+      <section class="module" id="module-8" data-module-id="8">
+        <div class="module-head">
+          <span class="module-num">08</span>
+          <h2>Solution lifecycle &amp; deployment</h2>
+          <span class="badge">Deployment</span>
+        </div>
+        <div class="module-body">
+          <p>A <strong>solution</strong> is the unit of deployment in Dynamics 365 &mdash; a package of tables, forms, views, plugins, flows, web resources, and security roles that you move between environments as a single, versioned bundle. Getting comfortable with the lifecycle of a solution is arguably the single most important operational skill on a CRM team, because it's the difference between a change landing cleanly and a Friday-afternoon production incident. This module is the hands-on companion to <a href="#module-7">Module 7</a>'s bigger-picture ALM architecture.</p>
+
+          <h3>Managed vs. unmanaged solutions</h3>
+          <p>Every solution is either <strong>unmanaged</strong> (editable, used while actively building) or <strong>managed</strong> (compiled and locked, used to deploy). You build in an unmanaged solution in a dev environment, then export it as managed and import that managed copy into test and production. You never hand-edit a managed solution in place.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Consideration</th><th>Unmanaged</th><th>Managed</th></tr>
+              <tr><td>Editable after import?</td><td>Yes, freely</td><td>No &mdash; locked, components are read-only</td></tr>
+              <tr><td>Where it lives</td><td>Development environments</td><td>Test, UAT, and production environments</td></tr>
+              <tr><td>Uninstall behavior</td><td>Components stay behind (they merge into Default Solution)</td><td>Clean uninstall &mdash; removes everything the solution added</td></tr>
+              <tr><td>Layering</td><td>N/A, it's the base layer</td><td>Can be layered; a second managed solution can further customize (with managed properties allowing it)</td></tr>
+              <tr><td>Typical use</td><td>Active development, prototyping, sandbox tinkering</td><td>Every environment downstream of dev</td></tr>
+            </table>
+          </div>
+          <div class="callout"><strong>Rule of thumb:</strong> production, and any other environment people share, should only ever receive <em>managed</em> solutions. If someone customizes production directly instead (unmanaged), there's no clean way to undo it later &mdash; those changes just merge into the environment's own Default Solution with no record of who added them or why. That silent drift &mdash; production quietly picking up changes dev never had &mdash; is the single most common cause of "it worked in dev but broke in prod" tickets.</div>
+
+          <h3>Export/import between environments</h3>
+          <p>The basic flow is always the same shape, whether you do it by hand in the maker portal or automate it: export the unmanaged solution from dev, convert/export it as managed, then import the managed version into the next environment up.</p>
+          <div class="diagram-wrap">
+            <svg viewBox="0 0 860 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Solution flow: build unmanaged in dev, export managed, import to test, import to production">
+              <line x1="60" y1="45" x2="800" y2="45" stroke="#c7cee6" stroke-width="2"/>
+              <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" text-anchor="middle" fill="#16213e">
+                <circle cx="60" cy="45" r="10" fill="var(--teal)"/><text x="60" y="76">Build (unmanaged, Dev)</text>
+                <circle cx="280" cy="45" r="10" fill="var(--amber)"/><text x="280" y="76">Export as managed</text>
+                <circle cx="500" cy="45" r="10" fill="var(--amber)"/><text x="500" y="76">Import → Test / UAT</text>
+                <circle cx="800" cy="45" r="10" fill="var(--teal)"/><text x="800" y="76">Import → Production</text>
+              </g>
+              <text x="430" y="112" font-size="11" fill="#5c6480" text-anchor="middle">The same managed .zip that passed test is the exact file promoted to production &mdash; never rebuild it per environment.</text>
+            </svg>
+          </div>
+          <p>Two settings matter every time you import: <strong>Stage for upgrade</strong> lets you push the file to the server without applying it yet (useful for pre-staging a large import), and the choice between letting Dataverse process <strong>asynchronously</strong> (recommended for large solutions, tracked as a system job) versus waiting synchronously in the UI.</p>
+
+          <h3>Solution patches and upgrades</h3>
+          <p>Once a managed solution is in production, you have two ways to ship a change to it: a <strong>patch</strong> (a small child solution holding only new or changed components, good for a quick fix) or a full <strong>upgrade</strong> (a new version of the whole solution that replaces the old one on import, cleanly removing anything you deleted).</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Aspect</th><th>Patch</th><th>Upgrade</th></tr>
+              <tr><td>Contains</td><td>Only new/changed components since the parent version</td><td>Every component, at its current state</td></tr>
+              <tr><td>Can remove components?</td><td>No &mdash; patches can only add or change</td><td>Yes &mdash; anything missing from the new version is removed</td></tr>
+              <tr><td>Best for</td><td>A fast, low-risk fix between planned releases</td><td>A planned release, or cleaning up patch sprawl</td></tr>
+              <tr><td>Gotcha</td><td>Patches pile up over time and get hard to track</td><td>Must be imported as "Stage for upgrade" then applied, or components are held in parallel until you finish the upgrade</td></tr>
+            </table>
+          </div>
+
+          <h3>Dependency checking &amp; common deployment failures</h3>
+          <p>Before Dataverse allows a delete, publish, or solution removal, it runs a dependency check &mdash; it won't let you delete a column that a form, view, business rule, or plugin step still references. That's a feature, not a bug, but it's also where deployments most often stall.</p>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Failure</th><th>Usual cause</th><th>Fix</th></tr>
+              <tr><td>Missing dependency on import</td><td>Solution references a component (a table, a connection reference, a flow) that doesn't exist yet in the target environment</td><td>Import the missing solution/component first, or add it to this solution</td></tr>
+              <tr><td>Managed solution won't let you delete a field</td><td>Another managed layer, form, or plugin step still depends on it</td><td>Run "Show Dependencies" first, remove the dependents, then delete</td></tr>
+              <tr><td>Import succeeds but a flow is turned off</td><td>Connection references weren't remapped to the target environment's connections</td><td>Reconfigure connection references during/after import, then turn the flow back on</td></tr>
+              <tr><td>Plugin step errors after import</td><td>Assembly version mismatch, or a secure/unsecure config value that only worked in the source environment</td><td>Re-register or update the step's configuration per environment</td></tr>
+              <tr><td>"Solution is missing required components"</td><td>You added a component to your solution but forgot a component it depends on (e.g. an option set used by a new column)</td><td>Use "Add Required Components" when adding anything to the solution</td></tr>
+            </table>
+          </div>
+          <div class="callout danger"><strong>Watch for this:</strong> importing a solution does not automatically publish customizations in every case, and it does not automatically re-enable flows whose connections weren't remapped. Always check the import job's status and click through any flows/connection references it flags before calling a deployment done.</div>
+
+          <h3>ALM basics: dev → test → prod</h3>
+          <p>At minimum, plan for three environments: <strong>development</strong> (where unmanaged work happens, one per active workstream or developer), <strong>test/UAT</strong> (managed solutions only, where testers and stakeholders validate), and <strong>production</strong> (managed solutions only, real users and data). Nothing gets built directly in production. This is the ground-level version of the environment architecture covered in <a href="#module-7">Module 7</a>.</p>
+
+          <p><a href="https://learn.microsoft.com/en-us/power-platform/alm/solution-concepts-alm" target="_blank" rel="noopener">Learn more: Solution concepts for ALM (Microsoft Learn)</a> &middot; <a href="https://learn.microsoft.com/en-us/power-platform/alm/solution-patching-strategy" target="_blank" rel="noopener">Solution patching strategy (Microsoft Learn)</a></p>
+        </div>
+        <div class="module-foot">
+          <label class="complete-check"><input type="checkbox" class="module-checkbox" data-module="8"><span>Mark this module complete</span></label>
+        </div>
+      </section>
+
+      <!-- ================= GLOSSARY ================= -->
+      <section class="module glossary-section" id="glossary">
+        <div class="module-head">
+          <h2>Glossary of key terms</h2>
+        </div>
+        <div class="module-body">
+          <p>Every term above, plus a few more you'll run into, in one searchable place. Type to filter, or pick a category chip.</p>
+          <div class="glossary-tools">
+            <input type="text" id="glossarySearch" class="glossary-search" placeholder="Search a term, e.g. &quot;managed solution&quot; or &quot;concurrency&quot;&hellip;">
+            <div class="chip-row" id="chipRow">
+              <button class="chip active" data-cat="all" type="button">All</button>
+              <button class="chip" data-cat="api" type="button">APIs &amp; actions</button>
+              <button class="chip" data-cat="automation" type="button">Automation</button>
+              <button class="chip" data-cat="ui" type="button">Customization</button>
+              <button class="chip" data-cat="security" type="button">Security</button>
+              <button class="chip" data-cat="data" type="button">Data &amp; integration</button>
+              <button class="chip" data-cat="ops" type="button">Monitoring &amp; ALM</button>
+              <button class="chip" data-cat="solution" type="button">Solutions &amp; deployment</button>
+            </div>
+          </div>
+
+          <div class="term-grid" id="termGrid">
+            <div class="term-card" data-cat="api"><span class="term-cat">APIs &amp; actions</span><h4>Bound action/function</h4><p>An operation attached to a specific table, called through that table's Web API endpoint.</p></div>
+            <div class="term-card" data-cat="api"><span class="term-cat">APIs &amp; actions</span><h4>Unbound action/function</h4><p>A standalone operation not tied to any table.</p></div>
+            <div class="term-card" data-cat="api"><span class="term-cat">APIs &amp; actions</span><h4>Custom API</h4><p>A code-defined, reusable message backed by a plugin class, callable from scripts, flows, plugins, and external apps.</p></div>
+            <div class="term-card" data-cat="api"><span class="term-cat">APIs &amp; actions</span><h4>Custom action</h4><p>A reusable, workflow-designer-built operation, mostly superseded by custom APIs for new work.</p></div>
+            <div class="term-card" data-cat="api"><span class="term-cat">APIs &amp; actions</span><h4>Web API</h4><p>Dataverse's RESTful, OData v4 endpoint for CRUD and custom message calls.</p></div>
+            <div class="term-card" data-cat="api"><span class="term-cat">APIs &amp; actions</span><h4>OData</h4><p>The REST-based protocol the Web API is built on, with $filter/$select/$orderby query syntax.</p></div>
+            <div class="term-card" data-cat="api"><span class="term-cat">APIs &amp; actions</span><h4>FetchXML</h4><p>An XML query language for Dataverse, used in views, reports, and RetrieveMultiple calls.</p></div>
+
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Automated flow</h4><p>A Power Automate flow that runs whenever its trigger event occurs, no human involved.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Instant flow</h4><p>A flow triggered manually by a user action, like pressing a button.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Scheduled flow</h4><p>A flow that runs on a recurrence with no external trigger.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Scope (Power Automate)</h4><p>An action that groups steps so error handling can be attached once to the whole group.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Concurrency control</h4><p>The setting controlling how many Apply-to-each iterations run in parallel versus sequentially.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Configure run after</h4><p>Per-action setting that branches a flow based on whether the previous action succeeded, failed, timed out, or was skipped.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Child flow</h4><p>A flow only callable by another flow, used to share logic across multiple parent flows.</p></div>
+            <div class="term-card" data-cat="automation"><span class="term-cat">Automation</span><h4>Environment variable</h4><p>A solution component holding configuration that differs per environment, with a default and per-environment overrides.</p></div>
+
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization</span><h4>PCF (Power Apps Component Framework)</h4><p>A framework for building fully custom, code-based controls for fields or grids.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization</span><h4>formContext</h4><p>The modern, execution-context-scoped way to access a form's data and controls in a script, replacing the global Xrm.Page.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization</span><h4>Command bar designer</h4><p>The modern, low-code tool for editing ribbon buttons and visibility logic with Power Fx.</p></div>
+            <div class="term-card" data-cat="ui"><span class="term-cat">Customization</span><h4>Custom page</h4><p>A canvas-app-authored page embedded inside a model-driven app for layouts the form/view designer can't produce.</p></div>
+
+            <div class="term-card" data-cat="security"><span class="term-cat">Security</span><h4>Business unit</h4><p>An organizational container used to scope security and reporting; every user and team belongs to exactly one.</p></div>
+            <div class="term-card" data-cat="security"><span class="term-cat">Security</span><h4>Security role</h4><p>A named bundle of privileges (Create/Read/Write/Delete/Append/Assign/Share), each with an access level.</p></div>
+            <div class="term-card" data-cat="security"><span class="term-cat">Security</span><h4>Team</h4><p>A group of users that can own records and hold security roles collectively.</p></div>
+            <div class="term-card" data-cat="security"><span class="term-cat">Security</span><h4>Access level</h4><p>How far a privilege reaches: None, User, Business Unit, Parent: Child Business Units, or Organization.</p></div>
+            <div class="term-card" data-cat="security"><span class="term-cat">Security</span><h4>Sharing</h4><p>Granting access to one specific record for a specific user or team, layered on top of their role.</p></div>
+            <div class="term-card" data-cat="security"><span class="term-cat">Security</span><h4>Relationship behavior</h4><p>Controls whether assign/share/delete cascade to related records: Referential, Referential (restrict delete), Parental, or Custom.</p></div>
+            <div class="term-card" data-cat="security"><span class="term-cat">Security</span><h4>Field security profile</h4><p>Grants elevated Read/Update/Create access to a specific field-security-enabled column for named users or teams.</p></div>
+
+            <div class="term-card" data-cat="data"><span class="term-cat">Data &amp; integration</span><h4>Import Data Wizard</h4><p>The built-in, maker-friendly tool for one-time CSV/Excel imports.</p></div>
+            <div class="term-card" data-cat="data"><span class="term-cat">Data &amp; integration</span><h4>Power Query dataflow</h4><p>A recurring, transformation-capable data load into Dataverse using the Power Query engine.</p></div>
+            <div class="term-card" data-cat="data"><span class="term-cat">Data &amp; integration</span><h4>SSIS / KingswaySoft</h4><p>A third-party connector for SQL Server Integration Services, used for large-scale, complex Dataverse migrations.</p></div>
+            <div class="term-card" data-cat="data"><span class="term-cat">Data &amp; integration</span><h4>Synchronous integration</h4><p>A call where the caller blocks and waits for the response before continuing.</p></div>
+            <div class="term-card" data-cat="data"><span class="term-cat">Data &amp; integration</span><h4>Asynchronous integration</h4><p>A call where the caller queues work and continues immediately, processed independently later.</p></div>
+            <div class="term-card" data-cat="data"><span class="term-cat">Data &amp; integration</span><h4>Configuration Migration Tool</h4><p>A Microsoft tool for moving reference/configuration data between environments.</p></div>
+
+            <div class="term-card" data-cat="ops"><span class="term-cat">Monitoring &amp; ALM</span><h4>Plugin trace log</h4><p>The stored output of ITracingService calls and plugin exceptions, used to debug server-side code.</p></div>
+            <div class="term-card" data-cat="ops"><span class="term-cat">Monitoring &amp; ALM</span><h4>System job</h4><p>A record of an asynchronous operation (async plugin, workflow, bulk job) with its status and any error.</p></div>
+            <div class="term-card" data-cat="ops"><span class="term-cat">Monitoring &amp; ALM</span><h4>Solution Checker</h4><p>A static analysis tool that flags known anti-patterns in plugins and workflows before deployment.</p></div>
+            <div class="term-card" data-cat="ops"><span class="term-cat">Monitoring &amp; ALM</span><h4>Power Platform Pipelines</h4><p>Microsoft's built-in, low-code tool for deploying solutions between environments with optional approval gates.</p></div>
+            <div class="term-card" data-cat="ops"><span class="term-cat">Monitoring &amp; ALM</span><h4>pac CLI</h4><p>The Power Platform command-line interface used to script solution export/import and other ALM tasks.</p></div>
+            <div class="term-card" data-cat="ops"><span class="term-cat">Monitoring &amp; ALM</span><h4>Solution segmentation</h4><p>The practice of splitting customizations into multiple solutions by ownership boundary or release cadence instead of one monolith.</p></div>
+
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Solution</h4><p>A packaged container of customizations moved between environments as one unit.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Managed solution</h4><p>A locked, non-editable package meant for test and production environments.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Unmanaged solution</h4><p>An editable package used while actively building in a development environment.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Solution patch</h4><p>A child solution holding only new or changed components since the parent version; can add or change but not remove.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Solution upgrade</h4><p>A full new version of a solution that replaces the old one on import, removing anything no longer present.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Dependency check</h4><p>Dataverse's validation that blocks deleting or removing a component still referenced elsewhere.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Connection reference</h4><p>A solution component pointing to a connection, letting flows be reconnected per environment without editing each flow.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Publisher prefix</h4><p>The short namespace (e.g. <code>new_</code>, <code>contoso_</code>) prepended to every custom component's schema name.</p></div>
+            <div class="term-card" data-cat="solution"><span class="term-cat">Solutions &amp; deployment</span><h4>Solution version</h4><p>The Major.Minor.Build.Revision number bumped on every solution export, tracked alongside release notes.</p></div>
+          </div>
+          <p class="no-results" id="noResults">No terms match that search &mdash; try a different word or clear the filter.</p>
+        </div>
+      </section>
+
+      <!-- ================= RESOURCES ================= -->
+      <section class="module resources-section" id="resources">
+        <div class="module-head">
+          <h2>Official resources &amp; further learning</h2>
+        </div>
+        <div class="module-body">
+          <p>Everything below is straight from Microsoft &mdash; use it any time this guide compresses something you want in full detail.</p>
+
+          <div class="resource-group">
+            <h3>Custom actions &amp; APIs</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/custom-api" target="_blank" rel="noopener">Create custom APIs</a><span>&mdash; Module 1</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/custom-actions" target="_blank" rel="noopener">Custom actions overview</a><span>&mdash; Module 1</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Power Automate</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-automate/error-handling" target="_blank" rel="noopener">Handle errors and exceptions</a><span>&mdash; Module 2</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-automate/flow-child-flows" target="_blank" rel="noopener">Child flows overview</a><span>&mdash; Module 2</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Advanced customization</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/component-framework/overview" target="_blank" rel="noopener">Power Apps component framework overview</a><span>&mdash; Module 3</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/maker/model-driven-apps/model-app-page-overview" target="_blank" rel="noopener">Custom pages overview</a><span>&mdash; Module 3</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Security</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/admin/wp-security-cheat-sheet" target="_blank" rel="noopener">Security concepts cheat sheet</a><span>&mdash; Module 4</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/admin/field-level-security" target="_blank" rel="noopener">Field-level security</a><span>&mdash; Module 4</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Data integration &amp; migration</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/webapi/overview" target="_blank" rel="noopener">Web API overview</a><span>&mdash; Module 5</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/use-fetchxml-construct-query" target="_blank" rel="noopener">Build queries with FetchXML</a><span>&mdash; Module 5</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Monitoring &amp; performance</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-apps/developer/data-platform/logging-tracing" target="_blank" rel="noopener">Logging and tracing</a><span>&mdash; Module 6</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/alm/checker-api/overview" target="_blank" rel="noopener">Power Apps Solution Checker</a><span>&mdash; Module 6</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Application lifecycle management</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/alm/pipelines" target="_blank" rel="noopener">Power Platform pipelines</a><span>&mdash; Module 7</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/alm/devops-build-tools" target="_blank" rel="noopener">Power Platform Build Tools for Azure DevOps</a><span>&mdash; Module 7</span></li>
+            </ul>
+          </div>
+
+          <div class="resource-group">
+            <h3>Solution lifecycle &amp; deployment</h3>
+            <ul class="resource-list">
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/alm/solution-concepts-alm" target="_blank" rel="noopener">Solution concepts for ALM</a><span>&mdash; Module 8</span></li>
+              <li><a href="https://learn.microsoft.com/en-us/power-platform/alm/solution-patching-strategy" target="_blank" rel="noopener">Solution patching strategy</a><span>&mdash; Module 8</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= EXAM CTA ================= -->
+      <section class="module exam-cta" id="exam">
+        <div class="module-head">
+          <h2>Ready to test what you learned?</h2>
+          <span class="badge">Knowledge check</span>
+        </div>
+        <div class="module-body">
+          <p>Take a 16-question exam covering all 8 modules. Score 80% or higher to pass.</p>
+          <button class="btn-exam btn-exam-primary" type="button" onclick="showExam()">Start the exam</button>
+        </div>
+      </section>
+    </div>
+
+    <header class="hero">
+      <div class="hero-inner">
+        <span class="hero-eyebrow">Knowledge Check</span>
+        <h1>Test your advanced Dynamics 365 CRM knowledge</h1>
+        <p class="lead">16 questions across the 8 modules. Score 80% or higher to pass.</p>
+
+        <div class="hero-progress" id="examProgress" style="display:none;">
+          <svg width="52" height="52" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.18)" stroke-width="10" fill="none"/>
+            <circle id="examProgressRingFg" cx="60" cy="60" r="52" stroke="var(--teal)" stroke-width="10" fill="none"
+              stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+              transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="progress-ring-label" id="examProgressLabel">0 / 16 &middot; 0%</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="exam-view" id="examView">
+      <div class="content-inner">
+
+        <section class="intro-card" id="startCard">
+          <h2>Ready?</h2>
+          <p>The questions pull from every module in the guide: custom actions and APIs, Power Automate internals, advanced customization, the security model, data integration and migration, monitoring and performance, ALM architecture, and solution lifecycle and deployment.</p>
+          <button class="btn-exam btn-exam-primary" id="startBtn" type="button">Start the exam</button>
+        </section>
+
+        <div id="examContainer" style="display:none;"></div>
+
+        <div id="resultsContainer" style="display:none;"></div>
+
+        <footer class="site-footer">
+          <p><a href="#" onclick="showGuide(); return false;">← Back to the learning guide</a></p>
+        </footer>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>Built to take a CRM team member from "can use it" to "can own it," one module at a time.<br>Something out of date or missing? Flag it with whoever's maintaining this guide. &middot; <a href="#top">Back to top</a></p>
+    </footer>
+
+  </main>
+</div>
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<script>
+(function(){
+  var TOTAL_MODULES = 8;
+  var progress = {};
+  var STORAGE_KEY = 'd365-crm-advanced-progress-v2';
+  var autoChecked = {};
+  var userUnchecked = {};
+  var seenModules = {};
+  var previousCompleted = 0;
+  var isFirstApply = true;
+
+  function hasStorage(){
+    return typeof window.storage !== 'undefined' && window.storage !== null;
+  }
+
+  async function loadProgress(){
+    if (hasStorage()){
+      try{
+        var result = await window.storage.get(STORAGE_KEY, false);
+        if (result && result.value){
+          progress = JSON.parse(result.value);
+        }
+      }catch(e){
+        progress = {};
+      }
+    }
+    applyProgressToUI();
+  }
+
+  async function saveProgress(){
+    if (!hasStorage()) return;
+    try{
+      await window.storage.set(STORAGE_KEY, JSON.stringify(progress), false);
+    }catch(e){
+      console.warn('Could not save progress right now.', e);
+    }
+  }
+
+  function applyProgressToUI(){
+    var completed = 0;
+    for (var i = 1; i <= TOTAL_MODULES; i++){
+      var id = String(i);
+      var isDone = !!progress[id];
+      if (isDone) completed++;
+
+      var checkbox = document.querySelector('.module-checkbox[data-module="' + id + '"]');
+      if (checkbox) checkbox.checked = isDone;
+
+      var section = document.getElementById('module-' + id);
+      if (section) section.classList.toggle('is-complete', isDone);
+
+      var navDot = document.querySelector('.side-nav a[data-module="' + id + '"] .dot');
+      if (navDot) navDot.classList.toggle('done', isDone);
+    }
+    updateProgressRing(completed);
+    if (!isFirstApply && completed === TOTAL_MODULES && previousCompleted < TOTAL_MODULES){
+      playCompletionSound();
+    }
+    previousCompleted = completed;
+    isFirstApply = false;
+  }
+
+  function playCompletionSound(){
+    try {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      var ctx = new AudioContext();
+      var t = ctx.currentTime;
+
+      var osc1 = ctx.createOscillator();
+      var gain1 = ctx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(523.25, t);
+      gain1.gain.setValueAtTime(0.12, t);
+      gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc1.start(t);
+      osc1.stop(t + 0.4);
+
+      var osc2 = ctx.createOscillator();
+      var gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(783.99, t + 0.12);
+      gain2.gain.setValueAtTime(0, t + 0.12);
+      gain2.gain.linearRampToValueAtTime(0.12, t + 0.14);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+      osc2.start(t + 0.12);
+      osc2.stop(t + 0.7);
+    } catch(e) {
+      console.warn('Could not play completion sound.', e);
+    }
+  }
+
+  function updateProgressRing(completed){
+    var pct = Math.round((completed / TOTAL_MODULES) * 100);
+    var circle = document.getElementById('progressRingFg');
+    var circumference = 2 * Math.PI * 52;
+    if (circle){
+      var offset = circumference - (pct / 100) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+    var label = document.getElementById('progressLabel');
+    if (label){
+      label.innerHTML = completed + ' / ' + TOTAL_MODULES + ' modules &middot; ' + pct + '%<small>Saved automatically as you go</small>';
+    }
+    var banner = document.getElementById('completionBanner');
+    if (banner){
+      banner.classList.toggle('hidden', completed < TOTAL_MODULES);
+    }
+  }
+
+  document.addEventListener('change', function(e){
+    if (e.target.classList && e.target.classList.contains('module-checkbox')){
+      var id = e.target.getAttribute('data-module');
+      progress[id] = e.target.checked;
+      if (e.target.checked){
+        delete userUnchecked[id];
+      } else {
+        userUnchecked[id] = true;
+        delete autoChecked[id];
+      }
+      applyProgressToUI();
+      saveProgress();
+    }
+  });
+
+  var resetBtn = document.getElementById('resetProgressBtn');
+  var resetConfirm = document.getElementById('resetConfirm');
+  var resetYes = document.getElementById('resetYes');
+  var resetNo = document.getElementById('resetNo');
+
+  if (resetBtn){
+    resetBtn.addEventListener('click', function(){
+      resetConfirm.classList.remove('hidden');
+    });
+  }
+  if (resetNo){
+    resetNo.addEventListener('click', function(){
+      resetConfirm.classList.add('hidden');
+    });
+  }
+  if (resetYes){
+    resetYes.addEventListener('click', async function(){
+      progress = {};
+      await saveProgress();
+      applyProgressToUI();
+      resetConfirm.classList.add('hidden');
+    });
+  }
+
+  // ---- glossary filter ----
+  var glossarySearch = document.getElementById('glossarySearch');
+  var chips = document.querySelectorAll('.chip');
+  var noResults = document.getElementById('noResults');
+
+  function filterGlossary(){
+    var q = (glossarySearch ? glossarySearch.value : '').toLowerCase();
+    var activeChip = document.querySelector('.chip.active');
+    var cat = activeChip ? activeChip.getAttribute('data-cat') : 'all';
+    var visibleCount = 0;
+
+    document.querySelectorAll('.term-card').forEach(function(card){
+      var matchesCat = (cat === 'all' || card.getAttribute('data-cat') === cat);
+      var matchesSearch = card.textContent.toLowerCase().indexOf(q) !== -1;
+      var show = matchesCat && matchesSearch;
+      card.style.display = show ? '' : 'none';
+      if (show) visibleCount++;
+    });
+
+    if (noResults) noResults.style.display = (visibleCount === 0) ? 'block' : 'none';
+  }
+
+  if (glossarySearch) glossarySearch.addEventListener('input', filterGlossary);
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      this.classList.add('active');
+      filterGlossary();
+    });
+  });
+
+  // ---- mobile nav ----
+  var sidebar = document.getElementById('sidebar');
+  var mobileToggle = document.getElementById('mobileNavToggle');
+  if (mobileToggle){
+    mobileToggle.addEventListener('click', function(){
+      sidebar.classList.toggle('open');
+    });
+  }
+  document.querySelectorAll('.side-nav a').forEach(function(a){
+    a.addEventListener('click', function(){
+      sidebar.classList.remove('open');
+    });
+  });
+  document.addEventListener('click', function(e){
+    if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== mobileToggle){
+      sidebar.classList.remove('open');
+    }
+  });
+
+  // ---- active section highlight ----
+  var navLinks = document.querySelectorAll('.side-nav a[data-module]');
+  var trackedSections = document.querySelectorAll('.module[data-module-id]');
+  if ('IntersectionObserver' in window && trackedSections.length){
+    var navObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          var id = entry.target.getAttribute('data-module-id');
+          navLinks.forEach(function(l){ l.classList.remove('active'); });
+          var activeLink = document.querySelector('.side-nav a[data-module="' + id + '"]');
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    trackedSections.forEach(function(s){ navObserver.observe(s); });
+
+    // ---- auto-check sections scrolled past ----
+    var autoCheckObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var id = entry.target.getAttribute('data-module-id');
+        if (entry.isIntersecting){
+          seenModules[id] = true;
+        } else if (seenModules[id] && entry.boundingClientRect.bottom < 0){
+          if (!progress[id] && !userUnchecked[id]){
+            progress[id] = true;
+            autoChecked[id] = true;
+            applyProgressToUI();
+            saveProgress();
+          }
+        }
+      });
+    }, { threshold: 0 });
+    trackedSections.forEach(function(s){ autoCheckObserver.observe(s); });
+  }
+
+  // ---- reveal on scroll ----
+  var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealTargets = document.querySelectorAll('.module');
+  if (prefersReduced || !('IntersectionObserver' in window)){
+    revealTargets.forEach(function(s){ s.classList.add('revealed'); });
+  } else {
+    var revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    revealTargets.forEach(function(s){ revealObserver.observe(s); });
+  }
+
+  loadProgress();
+})();
+
+  // ---- guide / exam view toggle ----
+  function showExam(){
+    document.getElementById('guideView').classList.add('hidden');
+    document.getElementById('examView').classList.add('active');
+    document.getElementById('guideProgress').style.display = 'none';
+    document.getElementById('examProgress').style.display = 'flex';
+    window.scrollTo(0,0);
+  }
+  function showGuide(){
+    document.getElementById('guideView').classList.remove('hidden');
+    document.getElementById('examView').classList.remove('active');
+    document.getElementById('guideProgress').style.display = 'flex';
+    document.getElementById('examProgress').style.display = 'none';
+    window.scrollTo(0,0);
+  }
+
+
+(function(){
+  var TOTAL = 16;
+  var PASS_PCT = 80;
+  var current = 0;
+  var answers = new Array(TOTAL).fill(null);
+
+  var questions = [
+    {
+      type: 'mc',
+      question: 'What is the main difference between a bound and an unbound custom API?',
+      choices: [
+        'Bound APIs are free; unbound APIs require a license',
+        'A bound API is attached to a specific table and called through that table\'s endpoint; an unbound API stands alone',
+        'Unbound APIs cannot be called from JavaScript',
+        'Bound APIs only work with Power Automate'
+      ],
+      correct: 1,
+      explanation: 'Bound actions/functions operate on a specific entity (e.g. accounts(id)/...); unbound ones are not tied to any table.'
+    },
+    {
+      type: 'mc',
+      question: 'When should you prefer a plugin over a custom action or custom API?',
+      choices: [
+        'When the logic should run automatically in response to a platform event like Create or Update, not just on demand',
+        'When you want the logic to be callable from Power Automate',
+        'When you need strongly typed input parameters',
+        'Plugins and custom APIs are interchangeable in every scenario'
+      ],
+      correct: 0,
+      explanation: 'A plugin reacts to platform events automatically; a custom action/API is invoked explicitly on demand from a script, flow, or another plugin.'
+    },
+    {
+      type: 'match',
+      question: 'Match each Power Automate concept to what it controls.',
+      terms: ['Scope', 'Concurrency control', 'Configure run after', 'Child flow'],
+      options: [
+        'Branches a flow based on whether the previous action succeeded, failed, or timed out',
+        'Groups steps so error handling can be attached once to the whole group',
+        'A flow only callable by another flow, sharing logic across parents',
+        'Controls how many loop iterations run in parallel versus sequentially'
+      ],
+      correct: [1, 3, 0, 2],
+      explanation: 'Scope groups steps; Concurrency control governs parallel vs. sequential loop iterations; Configure run after branches on outcome; a Child flow is triggered only by another flow.'
+    },
+    {
+      type: 'tf',
+      question: 'By default, an Apply to each loop in Power Automate can run its iterations in parallel.',
+      correct: true,
+      explanation: 'Apply to each runs up to 20 iterations concurrently by default unless Concurrency Control is set to sequential (degree of parallelism = 1).'
+    },
+    {
+      type: 'mc',
+      question: 'What is the modern, recommended way for a form script to access form data and controls?',
+      choices: [
+        'The global Xrm.Page object',
+        'formContext, obtained from the executionContext passed into the event handler',
+        'Direct DOM manipulation of the form\'s HTML',
+        'A hardcoded reference to the form\'s GUID'
+      ],
+      correct: 1,
+      explanation: 'formContext, pulled from executionContext, is scoped correctly to the actual form/dialog in play; the global Xrm.Page breaks in multi-form scenarios like Quick Create.'
+    },
+    {
+      type: 'mc',
+      question: 'When should you reach for a PCF (Power Apps Component Framework) control instead of a client script?',
+      choices: [
+        'Whenever you want to react to a field changing value',
+        'When a standard field or subgrid control can\'t express what the UI needs, requiring a genuinely new control type',
+        'PCF and client scripts are never used for the same kind of problem',
+        'Only when building a canvas app'
+      ],
+      correct: 1,
+      explanation: 'PCF is for building a fully custom control; plain client scripting is for reacting to events on standard controls that already exist.'
+    },
+    {
+      type: 'mc',
+      question: 'Which access level grants a user access to records owned by any user or team in their own business unit, but not child business units?',
+      choices: ['User', 'Business Unit', 'Parent: Child Business Units', 'Organization'],
+      correct: 1,
+      explanation: 'Business Unit access level covers only records owned within the user\'s own business unit, not its children.'
+    },
+    {
+      type: 'tf',
+      question: 'A field security profile can hide a specific column even if the user\'s security role otherwise allows them to read the whole record.',
+      correct: true,
+      explanation: 'Column-level (field) security is enforced independently of table-level record access; a field can be masked even when the record itself is visible.'
+    },
+    {
+      type: 'mc',
+      question: 'Which is generally true when comparing FetchXML to OData queries against the Web API?',
+      choices: [
+        'FetchXML has stronger native support for aggregation and grouping',
+        'OData cannot be used to filter or sort results',
+        'FetchXML is REST-based; OData is XML-based',
+        'They cannot both query the same table'
+      ],
+      correct: 0,
+      explanation: 'FetchXML has full native support for sum/count/group by aggregation; OData needs the more verbose $apply extension for similar results.'
+    },
+    {
+      type: 'mc',
+      question: 'Which tool is the standard choice for a large-scale, complex, repeatable Dataverse data migration with upserts and complex relationships?',
+      choices: ['Import Data Wizard', 'SSIS with the KingswaySoft connector', 'Advanced Find', 'Ribbon Workbench'],
+      correct: 1,
+      explanation: 'SSIS with KingswaySoft is the de facto standard for large, complex, repeatable ETL into Dataverse; the Import Data Wizard is meant for quick one-time loads.'
+    },
+    {
+      type: 'tf',
+      question: 'An asynchronous integration pattern means the caller waits for a response before continuing.',
+      correct: false,
+      explanation: 'That describes a synchronous pattern. Asynchronous means the caller queues work and continues immediately, with processing happening independently.'
+    },
+    {
+      type: 'mc',
+      question: 'Where would you look first when a plugin should have run but there is no user-facing error and nothing seems to have happened?',
+      choices: ['The glossary', 'System Jobs, to check for a failed asynchronous operation', 'The command bar designer', 'A Power BI dashboard'],
+      correct: 1,
+      explanation: 'Asynchronous failures do not interrupt the user who triggered them; System Jobs shows the status and error message for async plugin steps and workflows.'
+    },
+    {
+      type: 'mc',
+      question: 'What does the Power Apps Solution Checker do?',
+      choices: [
+        'It automatically fixes broken plugin code',
+        'It statically analyzes plugins and workflows for known anti-patterns before deployment',
+        'It measures how many users are logged in',
+        'It converts unmanaged solutions to managed solutions'
+      ],
+      correct: 1,
+      explanation: 'Solution Checker flags known anti-patterns (blocking sync calls, missing null checks, unbounded queries) before you ship, similar to running a linter.'
+    },
+    {
+      type: 'mc',
+      question: 'What does Power Platform Pipelines let a maker do that they couldn\'t easily do before?',
+      choices: [
+        'Write plugin code without Visual Studio',
+        'Deploy a managed solution to a target environment from a low-code UI, with an approval gate, without needing admin access to the target',
+        'Automatically generate security roles',
+        'Replace the need for any environments beyond production'
+      ],
+      correct: 1,
+      explanation: 'Pipelines exports, packages, and imports the managed solution on the maker\'s behalf, optionally behind an approval gate, without requiring PowerShell or target-environment admin rights.'
+    },
+    {
+      type: 'mc',
+      question: 'What is the key difference between a managed and an unmanaged solution?',
+      choices: [
+        'Managed solutions are for dev; unmanaged for production',
+        'Unmanaged solutions are editable and used while building; managed solutions are locked and used for deployment',
+        'There is no functional difference, only naming',
+        'Managed solutions cannot contain plugins'
+      ],
+      correct: 1,
+      explanation: 'You build in an unmanaged solution in dev, then export it as managed and import that into test/production, where it stays locked.'
+    },
+    {
+      type: 'mc',
+      question: 'What is the difference between a solution patch and a solution upgrade?',
+      choices: [
+        'A patch can remove components; an upgrade cannot',
+        'A patch contains only new/changed components and cannot remove anything; an upgrade replaces the whole solution and can remove components',
+        'They are identical, just different names for the same operation',
+        'A patch is for production; an upgrade is for development'
+      ],
+      correct: 1,
+      explanation: 'Patches only add or change components. Upgrades bring the solution to its full new state, removing anything missing from the new version.'
+    }
+  ];
+
+  var container = document.getElementById('examContainer');
+  var resultsContainer = document.getElementById('resultsContainer');
+  var startCard = document.getElementById('startCard');
+  var startBtn = document.getElementById('startBtn');
+  var progressRing = document.getElementById('examProgressRingFg');
+  var progressLabel = document.getElementById('examProgressLabel');
+
+  function updateProgress(){
+    var answered = answers.filter(function(a){ return a !== null; }).length;
+    var pct = Math.round((answered / TOTAL) * 100);
+    var circumference = 2 * Math.PI * 52;
+    var offset = circumference - (pct / 100) * circumference;
+    if (progressRing) progressRing.style.strokeDashoffset = offset;
+    if (progressLabel) progressLabel.textContent = answered + ' / ' + TOTAL + ' · ' + pct + '%';
+  }
+
+  function renderQuestion(index){
+    var q = questions[index];
+    var html = '<div class="exam-card">';
+    html += '<div class="question-header"><span class="question-counter">Question ' + (index + 1) + ' of ' + TOTAL + '</span></div>';
+    html += '<div class="question-text">' + escapeHtml(q.question) + '</div>';
+
+    if (q.type === 'mc'){
+      html += '<div class="choices">';
+      q.choices.forEach(function(choice, i){
+        html += '<label class="choice" data-idx="' + i + '">';
+        html += '<input type="radio" name="q' + index + '" value="' + i + '"' + (answers[index] === i ? ' checked' : '') + '>';
+        html += '<span class="choice-label">' + escapeHtml(choice) + '</span>';
+        html += '</label>';
+      });
+      html += '</div>';
+    } else if (q.type === 'tf'){
+      html += '<div class="choices">';
+      [true, false].forEach(function(val){
+        var i = val ? 1 : 0;
+        html += '<label class="choice" data-idx="' + i + '">';
+        html += '<input type="radio" name="q' + index + '" value="' + i + '"' + (answers[index] === i ? ' checked' : '') + '>';
+        html += '<span class="choice-label">' + (val ? 'True' : 'False') + '</span>';
+        html += '</label>';
+      });
+      html += '</div>';
+    } else if (q.type === 'match'){
+      html += '<div class="matching-wrap">';
+      q.terms.forEach(function(term, i){
+        html += '<div class="matching-row">';
+        html += '<span class="matching-term">' + escapeHtml(term) + '</span>';
+        html += '<select class="matching-select" data-idx="' + i + '">';
+        html += '<option value="">-- Select description --</option>';
+        q.options.forEach(function(opt, j){
+          html += '<option value="' + j + '"' + (answers[index] && answers[index][i] === j ? ' selected' : '') + '>' + escapeHtml(opt) + '</option>';
+        });
+        html += '</select>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="nav-btns">';
+    html += '<button class="btn-exam btn-exam-secondary" id="prevBtn" type="button"' + (index === 0 ? ' disabled' : '') + '>Previous</button>';
+    if (index < TOTAL - 1){
+      html += '<button class="btn-exam btn-exam-primary" id="nextBtn" type="button">Next</button>';
+    } else {
+      html += '<button class="btn-exam btn-exam-primary" id="finishBtn" type="button">Finish &amp; score</button>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    container.innerHTML = html;
+    bindQuestionEvents(index);
+  }
+
+  function bindQuestionEvents(index){
+    var q = questions[index];
+    if (q.type === 'mc' || q.type === 'tf'){
+      container.querySelectorAll('.choice input').forEach(function(input){
+        input.addEventListener('change', function(){
+          answers[index] = parseInt(this.value, 10);
+          updateProgress();
+          highlightSelected(index);
+        });
+      });
+    } else if (q.type === 'match'){
+      container.querySelectorAll('.matching-select').forEach(function(select){
+        select.addEventListener('change', function(){
+          if (!answers[index]) answers[index] = new Array(q.terms.length).fill(null);
+          var idx = parseInt(this.getAttribute('data-idx'), 10);
+          var val = this.value === '' ? null : parseInt(this.value, 10);
+          answers[index][idx] = val;
+          updateProgress();
+        });
+      });
+    }
+
+    var prevBtn = document.getElementById('prevBtn');
+    var nextBtn = document.getElementById('nextBtn');
+    var finishBtn = document.getElementById('finishBtn');
+
+    if (prevBtn) prevBtn.addEventListener('click', function(){ current--; renderQuestion(current); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ current++; renderQuestion(current); });
+    if (finishBtn) finishBtn.addEventListener('click', showResults);
+
+    highlightSelected(index);
+  }
+
+  function highlightSelected(index){
+    var q = questions[index];
+    if (q.type === 'mc' || q.type === 'tf'){
+      container.querySelectorAll('.choice').forEach(function(label){
+        label.classList.toggle('selected', answers[index] === parseInt(label.getAttribute('data-idx'), 10));
+      });
+    }
+  }
+
+  function showResults(){
+    var score = 0;
+    var reviewHtml = '';
+
+    questions.forEach(function(q, i){
+      var isCorrect = false;
+      var userAnswer = '';
+      var correctAnswer = '';
+
+      if (q.type === 'mc'){
+        userAnswer = answers[i] !== null ? q.choices[answers[i]] : 'No answer';
+        correctAnswer = q.choices[q.correct];
+        isCorrect = answers[i] === q.correct;
+      } else if (q.type === 'tf'){
+        userAnswer = answers[i] !== null ? (answers[i] === 1 ? 'True' : 'False') : 'No answer';
+        correctAnswer = q.correct ? 'True' : 'False';
+        isCorrect = answers[i] === (q.correct ? 1 : 0);
+      } else if (q.type === 'match'){
+        var ans = answers[i] || [];
+        var allCorrect = true;
+        var parts = [];
+        q.terms.forEach(function(term, j){
+          var selected = ans[j] !== null && ans[j] !== undefined ? q.options[ans[j]] : '—';
+          parts.push(term + ' → ' + selected);
+          if (ans[j] !== q.correct[j]) allCorrect = false;
+        });
+        userAnswer = parts.join('; ');
+        correctAnswer = q.terms.map(function(term, j){ return term + ' → ' + q.options[q.correct[j]]; }).join('; ');
+        isCorrect = allCorrect;
+      }
+
+      if (isCorrect) score++;
+
+      reviewHtml += '<div class="review-item ' + (isCorrect ? 'correct' : 'incorrect') + '">';
+      reviewHtml += '<div class="review-status">' + (isCorrect ? '✓ Correct' : '✗ Incorrect') + '</div>';
+      reviewHtml += '<div class="question-text" style="font-size:1rem;margin-bottom:8px;">' + escapeHtml(q.question) + '</div>';
+      reviewHtml += '<div class="review-answer"><strong>Your answer:</strong> ' + escapeHtml(userAnswer) + '</div>';
+      if (!isCorrect){
+        reviewHtml += '<div class="review-answer"><strong>Correct answer:</strong> ' + escapeHtml(correctAnswer) + '</div>';
+      }
+      reviewHtml += '<div class="review-answer" style="margin-top:8px;">' + escapeHtml(q.explanation) + '</div>';
+      reviewHtml += '</div>';
+    });
+
+    var pct = Math.round((score / TOTAL) * 100);
+    var passed = pct >= PASS_PCT;
+
+    var html = '<div class="exam-card results-hero">';
+    html += '<div class="pass-badge ' + (passed ? 'pass' : 'fail') + '">' + (passed ? '🎉 Passed' : 'Keep learning') + '</div>';
+    html += '<div class="score-ring-wrap">';
+    html += '<svg viewBox="0 0 120 120" aria-hidden="true">';
+    html += '<circle cx="60" cy="60" r="52" stroke="var(--line)" stroke-width="10" fill="none"/>';
+    html += '<circle cx="60" cy="60" r="52" stroke="' + (passed ? 'var(--teal)' : 'var(--amber)') + '" stroke-width="10" fill="none"';
+    html += ' stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="' + (326.7 - (pct / 100) * 326.7) + '" transform="rotate(-90 60 60)"/>';
+    html += '</svg>';
+    html += '<div class="score-text"><span class="score-pct">' + pct + '%</span><span class="score-label">' + score + '/' + TOTAL + '</span></div>';
+    html += '</div>';
+    html += '<h2>' + (passed ? 'Great work!' : 'You scored ' + pct + '%') + '</h2>';
+    html += '<p>' + (passed ? 'You have a solid grasp of these advanced topics. Consider shadowing a real solution deployment or plugin/API build next.' : 'Review the highlighted questions below and revisit the related modules in the guide before trying again.') + '</p>';
+    html += '<button class="btn-exam btn-exam-primary" id="retryBtn" type="button">Retry exam</button>';
+    html += '<a class="btn-exam btn-exam-secondary" href="d365-crm-advanced-topics-guide.html">Back to guide</a>';
+    html += '</div>';
+    html += '<h3 style="margin-top:32px;">Review your answers</h3>';
+    html += reviewHtml;
+
+    resultsContainer.innerHTML = html;
+    container.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    startCard.style.display = 'none';
+    document.getElementById('examProgressLabel').textContent = score + '/' + TOTAL + ' · ' + pct + '%';
+
+    document.getElementById('retryBtn').addEventListener('click', restartExam);
+
+    if (passed) fireConfetti();
+  }
+
+  function restartExam(){
+    current = 0;
+    answers = new Array(TOTAL).fill(null);
+    resultsContainer.style.display = 'none';
+    container.style.display = 'block';
+    startCard.style.display = 'none';
+    updateProgress();
+    renderQuestion(0);
+  }
+
+  function fireConfetti(){
+    var confetti = document.getElementById('confetti');
+    var colors = ['var(--teal)', 'var(--amber)', '#8fa3d9', '#fff'];
+    for (var i = 0; i < 60; i++){
+      var piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDelay = Math.random() * 0.8 + 's';
+      piece.style.animationDuration = (1.8 + Math.random() * 1.2) + 's';
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      confetti.appendChild(piece);
+    }
+    setTimeout(function(){
+      confetti.innerHTML = '';
+    }, 3500);
+  }
+
+  function escapeHtml(text){
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  startBtn.addEventListener('click', function(){
+    startCard.style.display = 'none';
+    container.style.display = 'block';
+    updateProgress();
+    renderQuestion(0);
+  });
+})();
+
+</script>
+</body>
+</html>

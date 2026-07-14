@@ -68,13 +68,13 @@
   /* ---------- card grid ---------- */
   .picker{
     width:100%;
-    max-width:980px;
+    max-width:1180px;
     margin:-56px auto 0;
     padding:0 28px 80px;
     position:relative;
     z-index:3;
     display:grid;
-    grid-template-columns:repeat(2, 1fr);
+    grid-template-columns:repeat(3, 1fr);
     gap:26px;
   }
 
@@ -105,6 +105,7 @@
   .path-card:hover .glow{opacity:.55; transform:scale(1.12);}
   .path-card.foundations .glow{background:radial-gradient(circle, var(--teal), transparent 70%);}
   .path-card.advanced .glow{background:radial-gradient(circle, var(--amber), transparent 70%);}
+  .path-card.labs .glow{background:radial-gradient(circle, var(--navy-3), transparent 70%);}
 
   .path-icon{
     width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center;
@@ -112,6 +113,7 @@
   }
   .path-card.foundations .path-icon{background:#e6f8f6;}
   .path-card.advanced .path-icon{background:#fbf5e9;}
+  .path-card.labs .path-icon{background:#eef1f9;}
   .path-icon svg{width:30px; height:30px;}
 
   .path-kicker{
@@ -137,17 +139,22 @@
   }
   .path-card.foundations .path-cta{color:var(--teal-dark);}
   .path-card.advanced .path-cta{color:#a06b16;}
+  .path-card.labs .path-cta{color:var(--navy-3);}
   .path-cta .arrow{transition:transform .18s ease;}
   .path-card:hover .path-cta .arrow{transform:translateX(5px);}
 
   .path-card.foundations{border-top:4px solid var(--teal);}
   .path-card.advanced{border-top:4px solid var(--amber);}
+  .path-card.labs{border-top:4px solid var(--navy-3);}
 
   footer.site-footer{
     text-align:center; padding:0 20px 40px; color:var(--muted); font-size:.85rem;
   }
   footer.site-footer a{color:var(--muted); text-decoration:underline;}
 
+  @media (max-width:980px){
+    .picker{grid-template-columns:1fr 1fr;}
+  }
   @media (max-width:760px){
     .picker{grid-template-columns:1fr; margin-top:-40px;}
     .hero{padding:52px 22px 70px;}
@@ -170,7 +177,7 @@
     <div class="hero-inner">
       <span class="hero-eyebrow">Internal training &middot; Dynamics 365 CRM team</span>
       <h1>Dynamics 365 CRM Learning Paths</h1>
-      <p class="lead">Two self-paced guides, each with progress tracking and a knowledge-check exam. Start with Foundations if you're new to the platform, or jump into Advanced Topics once you're comfortable with the basics.</p>
+      <p class="lead">Two self-paced guides plus a set of hands-on labs, each with progress tracking. Start with Foundations if you're new to the platform, move into Advanced Topics once the basics feel natural, then prove it in Practice Labs.</p>
     </div>
   </header>
 
@@ -209,6 +216,24 @@
         <span class="path-chip">16-question exam</span>
       </div>
       <div class="path-cta">Start Advanced Topics <span class="arrow">→</span></div>
+    </a>
+
+    <a class="path-card labs" href="d365-crm-practice-labs.html">
+      <div class="glow" aria-hidden="true"></div>
+      <div class="path-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 3H15M12 3V9L7 18C6.4 19.2 7.3 20.5 8.6 20.5H15.4C16.7 20.5 17.6 19.2 17 18L12 9" stroke="#2c3a78" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M8.5 15H15.5" stroke="#2c3a78" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="path-kicker">Hands-on &middot; 13 labs</span>
+      <h2>Practice Labs</h2>
+      <p class="desc">Build a real table, form, business rule, script, flow, security role, and Custom API step by step in your own environment &mdash; then package and ship what you made. Modeled after Microsoft Learn's lab style.</p>
+      <div class="path-meta">
+        <span class="path-chip">Needs a live environment</span>
+        <span class="path-chip">Checklist-driven</span>
+      </div>
+      <div class="path-cta">Start Practice Labs <span class="arrow">→</span></div>
     </a>
 
   </main>

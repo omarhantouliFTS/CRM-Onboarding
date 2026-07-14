@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D365 CRM Practice Labs — Hands-on Exercises</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16213e;
+    --navy:#141a38;
+    --navy-2:#232f63;
+    --navy-3:#2c3a78;
+    --teal:#17b6a6;
+    --teal-dark:#0e8f82;
+    --amber:#f2a93b;
+    --paper:#f5f7fb;
+    --card:#ffffff;
+    --line:#e2e6f2;
+    --muted:#5c6480;
+    --radius:14px;
+    --font-display:'Space Grotesk','Segoe UI',sans-serif;
+    --font-body:'IBM Plex Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+    --font-mono:'IBM Plex Mono','Consolas','SFMono-Regular',monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; font-family:var(--font-body); color:var(--ink); background:var(--paper);
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display); line-height:1.15; margin:0 0 .5em 0;}
+  p{margin:0 0 1em 0;}
+  a{color:var(--teal-dark);}
+  ul,ol{padding-left:1.25em;}
+  li{margin-bottom:.4em;}
+  code{font-family:var(--font-mono); font-size:.92em; background:#eef1f9; padding:.15em .4em; border-radius:5px;}
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px; border-radius:4px;}
+
+  .content-inner{max-width:920px; margin:0 auto; padding:0 28px 90px;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 55%,var(--navy-3) 100%);
+    color:#fff; padding:52px 28px 40px; position:relative; overflow:hidden;
+  }
+  .hero-inner{max-width:920px; margin:0 auto; position:relative; z-index:2;}
+  .hero-eyebrow{
+    font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.14em; font-size:.72rem;
+    color:var(--teal); margin-bottom:14px; display:block;
+  }
+  .hero h1{font-size:2.2rem; max-width:18ch; margin-bottom:.3em;}
+  .hero p.lead{color:#c9d3ef; max-width:58ch; font-size:1.05rem;}
+  .home-link{display:inline-flex; align-items:center; gap:6px; margin-top:18px; font-family:var(--font-mono); font-size:.8rem; color:#c9d3ef; text-decoration:none;}
+  .home-link:hover{color:#fff;}
+
+  .hero-progress{
+    position:fixed; top:18px; right:18px; z-index:100;
+    display:flex; align-items:center; gap:14px;
+    background:linear-gradient(135deg,var(--navy),var(--navy-2));
+    border:1px solid rgba(255,255,255,.14); border-radius:16px; padding:12px 16px; max-width:320px;
+    box-shadow:0 8px 24px rgba(20,26,56,.35);
+  }
+  .progress-ring-label{font-family:var(--font-mono); font-size:.88rem; color:#fff;}
+  .progress-ring-label small{display:block; color:#9db3e8; font-size:.7rem; margin-top:2px;}
+
+  .completion-banner{
+    max-width:920px; margin:0 auto; padding:14px 20px; background:var(--teal); color:#042f2a;
+    border-radius:12px; font-weight:600; text-align:center; position:relative; z-index:2; margin-top:18px;
+  }
+  .completion-banner.hidden{display:none;}
+
+  /* ---------- intro ---------- */
+  .intro-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 28px; margin:-28px 0 28px; position:relative; z-index:3;
+    box-shadow:0 12px 30px -18px rgba(20,26,56,.35);
+  }
+  .intro-card h2{font-size:1.15rem; margin-bottom:.6em;}
+
+  /* ---------- filters ---------- */
+  .filter-bar{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:24px;
+  }
+  .chip{
+    font-family:var(--font-mono); font-size:.74rem; padding:7px 15px; border-radius:20px;
+    border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer;
+  }
+  .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .lab-count{margin-left:auto; font-family:var(--font-mono); font-size:.78rem; color:var(--muted);}
+
+  /* ---------- lab grid & cards ---------- */
+  .track-heading{
+    display:flex; align-items:center; gap:12px; margin:34px 0 16px;
+  }
+  .track-heading h2{font-size:1.2rem; margin:0;}
+  .track-heading .dash{flex:1; height:1px; background:var(--line);}
+  .lab-grid{display:flex; flex-direction:column; gap:16px;}
+
+  details.lab-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  details.lab-card[open]{border-color:var(--teal); box-shadow:0 12px 30px -20px rgba(20,26,56,.35);}
+  details.lab-card.is-complete{border-left:4px solid var(--teal);}
+
+  summary.lab-summary{
+    cursor:pointer; list-style:none; padding:20px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  summary.lab-summary::-webkit-details-marker{display:none;}
+  summary.lab-summary::marker{content:"";}
+
+  .lab-id{
+    font-family:var(--font-mono); font-size:.82rem; color:var(--teal-dark); background:#e6f8f6;
+    padding:4px 10px; border-radius:8px; flex-shrink:0;
+  }
+  details.lab-card.advanced .lab-id{color:#a06b16; background:#fbf5e9;}
+
+  .lab-summary-text{flex:1; min-width:200px;}
+  .lab-summary-text h3{font-size:1.08rem; margin-bottom:2px;}
+  .lab-teaser{font-size:.86rem; color:var(--muted); margin:0;}
+
+  .lab-duration{
+    font-family:var(--font-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:20px; white-space:nowrap;
+  }
+  .lab-done-badge{
+    font-family:var(--font-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--teal-dark); background:#e6f8f6; padding:5px 10px; border-radius:20px; white-space:nowrap; display:none;
+  }
+  details.lab-card.is-complete .lab-done-badge{display:inline-block;}
+
+  .lab-chevron{
+    width:26px; height:26px; border-radius:50%; border:1px solid var(--line); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; transition:transform .2s ease;
+    color:var(--muted); font-size:.8rem;
+  }
+  details.lab-card[open] .lab-chevron{transform:rotate(90deg); border-color:var(--teal); color:var(--teal-dark);}
+
+  .lab-body{padding:0 24px 26px; border-top:1px solid var(--line); margin-top:2px; padding-top:20px;}
+  .lab-body h4{font-size:.95rem; margin:1.4em 0 .5em;}
+  .lab-body h4:first-child{margin-top:0;}
+
+  .scenario-box{
+    background:#f8f9fd; border-radius:10px; padding:14px 16px; font-size:.92rem; margin-bottom:14px;
+  }
+  .scenario-box strong{color:var(--navy-2);}
+
+  .prereq-list{font-size:.88rem; color:var(--muted);}
+
+  .exercise{margin-bottom:18px;}
+  .exercise-title{
+    font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--teal-dark); margin-bottom:8px;
+  }
+  .step-list{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px;}
+  .step-list li{
+    display:flex; align-items:flex-start; gap:10px; font-size:.92rem; margin:0;
+  }
+  .step-list input[type="checkbox"]{
+    width:17px; height:17px; margin-top:3px; accent-color:var(--teal); cursor:pointer; flex-shrink:0;
+  }
+  .step-list label{cursor:pointer;}
+  .step-list li.checked label{color:var(--muted); text-decoration:line-through; text-decoration-color:#c7cee6;}
+
+  .callout{
+    background:#fbf5e9; border-left:4px solid var(--amber); border-radius:6px;
+    padding:12px 16px; font-size:.9rem; margin:14px 0;
+  }
+  .callout strong{color:#7a5510;}
+  .callout.success{background:#e6f8f6; border-left-color:var(--teal);}
+  .callout.success strong{color:var(--teal-dark);}
+
+  .module-link{
+    font-size:.82rem; display:inline-flex; align-items:center; gap:6px; margin-top:6px;
+  }
+
+  .code-block{background:#0f1530; border-radius:10px; margin:14px 0; overflow:hidden;}
+  .code-label{
+    font-family:var(--font-mono); font-size:.66rem; text-transform:uppercase; letter-spacing:.08em;
+    color:#8fa3d9; padding:8px 16px; border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .code-block pre{margin:0; padding:14px 16px; overflow-x:auto;}
+  .code-block code{background:none; padding:0; color:#dce7ff; font-size:.8rem; line-height:1.55;}
+
+  .lab-foot{
+    margin-top:20px; padding-top:16px; border-top:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  }
+  .complete-check{display:flex; align-items:center; gap:10px; cursor:pointer; font-size:.92rem; color:var(--muted); user-select:none;}
+  .complete-check input{width:18px; height:18px; accent-color:var(--teal); cursor:pointer;}
+  .lab-progress-mini{font-family:var(--font-mono); font-size:.76rem; color:var(--muted);}
+
+  .reset-wrap{text-align:center; margin-top:34px;}
+  .ghost-btn{
+    font-family:var(--font-body); font-size:.82rem; color:var(--muted); background:transparent;
+    border:1px solid var(--line); padding:9px 16px; border-radius:20px; cursor:pointer;
+  }
+  .ghost-btn:hover{background:#eef1f9;}
+  .reset-confirm{
+    margin-top:12px; font-size:.82rem; color:var(--muted); background:#fff; border:1px solid var(--line);
+    padding:12px; border-radius:10px; display:inline-flex; flex-direction:column; gap:8px; align-items:center;
+  }
+  .reset-confirm.hidden{display:none;}
+  .reset-confirm-btns{display:flex; gap:8px;}
+  .ghost-btn.small{padding:6px 12px; font-size:.76rem;}
+
+  footer.site-footer{text-align:center; padding:34px 20px 10px; color:var(--muted); font-size:.85rem;}
+  footer.site-footer a{color:var(--muted);}
+
+  @media (max-width:700px){
+    .content-inner{padding:0 18px 70px;}
+    .hero{padding:36px 18px 30px;}
+    .hero h1{font-size:1.6rem;}
+    .intro-card{margin-top:-20px; padding:20px;}
+    .hero-progress{position:static; margin:20px auto 0; max-width:none; justify-content:center;}
+  }
+
+  @media print{
+    .filter-bar,.reset-wrap,.hero-progress{display:none;}
+    details.lab-card{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Hands-on practice &middot; Dynamics 365 CRM team</span>
+    <h1>Practice Labs</h1>
+    <p class="lead">Thirteen guided exercises that turn the Foundations and Advanced Topics guides into muscle memory &mdash; build a real table, a real form, a real flow, a real security role, in your own Dataverse environment. Modeled after the style of Microsoft Learn's hands-on labs.</p>
+    <a class="home-link" href="index.html">&larr; Back to learning paths</a>
+  </div>
+
+  <div class="hero-progress" id="labProgress">
+    <svg width="60" height="60" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.18)" stroke-width="10" fill="none"/>
+      <circle id="progressRingFg" cx="60" cy="60" r="52" stroke="var(--teal)" stroke-width="10" fill="none"
+        stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+        transform="rotate(-90 60 60)"/>
+    </svg>
+    <div class="progress-ring-label" id="progressLabel">0 / 13 labs &middot; 0%<small>Saved automatically as you go</small></div>
+  </div>
+</header>
+
+<div class="content-inner">
+
+  <div class="completion-banner hidden" id="completionBanner">
+    🎉 All 13 labs checked off &mdash; you've built a working (if small) CRM customization end to end. Show a mentor what you made.
+  </div>
+
+  <section class="intro-card">
+    <h2>How these labs work</h2>
+    <p>Each lab is self-contained but they build on each other loosely within a track &mdash; Foundations labs assume you completed the ones before them; Advanced labs assume the Foundations track (or equivalent comfort) plus, where noted, an earlier Advanced lab. Every lab needs a real Power Platform environment: a free <a href="https://make.powerapps.com" target="_blank" rel="noopener">Developer Plan</a> or trial works fine &mdash; nothing here needs production access, and several labs suggest a second environment as optional rather than required.</p>
+    <p>Click a lab to expand it. Check off steps as you go &mdash; your checkmarks are saved automatically. Each lab ends with a <strong>Success check</strong> and a "mark this lab complete" box that feeds the progress ring above.</p>
+  </section>
+
+  <div class="filter-bar">
+    <button class="chip active" data-filter="all" type="button">All labs</button>
+    <button class="chip" data-filter="foundations" type="button">Foundations</button>
+    <button class="chip" data-filter="advanced" type="button">Advanced Topics</button>
+    <span class="lab-count" id="labCount"></span>
+  </div>
+
+  <!-- ================= FOUNDATIONS TRACK ================= -->
+  <div class="track-heading" data-track-heading="foundations">
+    <h2>Foundations track</h2>
+    <div class="dash"></div>
+  </div>
+
+  <div class="lab-grid">
+
+    <!-- LAB F1 -->
+    <details class="lab-card foundations" data-lab-id="F1" data-track="foundations">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab F1</span>
+        <span class="lab-summary-text">
+          <h3>Explore your environment &amp; create a solution</h3>
+          <p class="lab-teaser">Set up the one solution every later lab builds inside.</p>
+        </span>
+        <span class="lab-duration">~15 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> You've just been given access to a Dataverse environment at Contoso. Before touching any data, get comfortable with where things live and set up your own workspace &mdash; a solution to hold everything you build across these labs.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Access to a Power Platform environment (a free Developer Plan or trial works) and maker portal access.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Find your environment</div>
+          <ol class="step-list" data-lab="F1" data-ex="1">
+            <li><input type="checkbox" id="F1-1-1"><label for="F1-1-1">Go to <code>make.powerapps.com</code> and sign in.</label></li>
+            <li><input type="checkbox" id="F1-1-2"><label for="F1-1-2">Open the environment picker (top-right) and note the environment name and region.</label></li>
+            <li><input type="checkbox" id="F1-1-3"><label for="F1-1-3">Open Settings (gear icon) → <strong>Session details</strong> and record the <strong>Instance URL</strong> &mdash; you'll need it for Advanced Lab A5's API calls.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout"><strong>Tip:</strong> if you have access to more than one environment, always double-check you're in the right one before customizing anything &mdash; building in the wrong environment is the single most common rookie mistake.</div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Create a publisher and solution</div>
+          <ol class="step-list" data-lab="F1" data-ex="2">
+            <li><input type="checkbox" id="F1-2-1"><label for="F1-2-1">Left nav → <strong>Solutions</strong> → <strong>+ New solution</strong>.</label></li>
+            <li><input type="checkbox" id="F1-2-2"><label for="F1-2-2">Under Publisher, click <strong>+ New publisher</strong>. Set Display name to your initials + "Contoso" (e.g. "OH Contoso"); set a short, unique Prefix (e.g. <code>oh</code>).</label></li>
+            <li><input type="checkbox" id="F1-2-3"><label for="F1-2-3">Save the publisher, then set your solution's Display name to <strong>Contoso CRM Customizations</strong>, pick the publisher you just created, and Save.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout"><strong>Note:</strong> every custom component you build from here on should go inside this one solution &mdash; see Foundations Module 1 for why unmanaged solutions matter.</div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Confirm it's ready</div>
+          <ol class="step-list" data-lab="F1" data-ex="3">
+            <li><input type="checkbox" id="F1-3-1"><label for="F1-3-1">Open your new solution &mdash; the Objects list should be empty.</label></li>
+            <li><input type="checkbox" id="F1-3-2"><label for="F1-3-2">Leave it open in a tab; every later Foundations lab adds to it.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> you have a solution named "Contoso CRM Customizations," owned by your own publisher, with a unique prefix.</div>
+
+        <a class="module-link" href="d365-crm-onboarding-guide.html#module-1" target="_blank" rel="noopener">Related reading: Foundations Module 1 &middot; Power Platform &amp; Dataverse foundations →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="F1"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="F1"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB F2 -->
+    <details class="lab-card foundations" data-lab-id="F2" data-track="foundations">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab F2</span>
+        <span class="lab-summary-text">
+          <h3>Create and connect a custom table</h3>
+          <p class="lab-teaser">Build a Renewal Reminder table linked to Account.</p>
+        </span>
+        <span class="lab-duration">~20 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Contoso wants to track "Renewal Reminders" tied to Accounts. Build the table, add a few columns, and connect it to Account with a relationship.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Lab F1 completed (solution and publisher ready).</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Create the table</div>
+          <ol class="step-list" data-lab="F2" data-ex="1">
+            <li><input type="checkbox" id="F2-1-1"><label for="F2-1-1">In your solution, <strong>+ New</strong> → <strong>Table</strong> → <strong>Table</strong>.</label></li>
+            <li><input type="checkbox" id="F2-1-2"><label for="F2-1-2">Display name: <strong>Renewal Reminder</strong>. Let the plural name auto-fill.</label></li>
+            <li><input type="checkbox" id="F2-1-3"><label for="F2-1-3">Save.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Add columns</div>
+          <ol class="step-list" data-lab="F2" data-ex="2">
+            <li><input type="checkbox" id="F2-2-1"><label for="F2-2-1">Open the table → <strong>Columns</strong> → <strong>+ New column</strong>.</label></li>
+            <li><input type="checkbox" id="F2-2-2"><label for="F2-2-2">Add: <strong>Reminder Date</strong> (Date only), <strong>Notes</strong> (Multiple lines of text), <strong>Status</strong> (Choice: Pending / Sent / Dismissed).</label></li>
+            <li><input type="checkbox" id="F2-2-3"><label for="F2-2-3">Save and publish each column.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Relate it to Account</div>
+          <ol class="step-list" data-lab="F2" data-ex="3">
+            <li><input type="checkbox" id="F2-3-1"><label for="F2-3-1"><strong>Relationships</strong> → <strong>+ New relationship</strong> → <strong>Many-to-one</strong>.</label></li>
+            <li><input type="checkbox" id="F2-3-2"><label for="F2-3-2">Related table: <strong>Account</strong>. This creates a lookup column on Renewal Reminder pointing at Account.</label></li>
+            <li><input type="checkbox" id="F2-3-3"><label for="F2-3-3">Leave Behavior at the default (Referential) &mdash; no cascading delete &mdash; and Save.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout"><strong>Tip:</strong> add the new lookup column to the Account form's "Renewal Reminders" subgrid so users can see reminders without leaving the Account &mdash; that's exactly what Foundations Module 4 calls a subgrid.</div>
+
+        <div class="callout success"><strong>Success check:</strong> a "Renewal Reminder" table exists with four columns (including the Account lookup) and it appears under Account's related tables.</div>
+
+        <a class="module-link" href="d365-crm-onboarding-guide.html#module-3" target="_blank" rel="noopener">Related reading: Foundations Module 3 &middot; Core CRM entities &amp; relationships →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="F2"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="F2"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB F3 -->
+    <details class="lab-card foundations" data-lab-id="F3" data-track="foundations">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab F3</span>
+        <span class="lab-summary-text">
+          <h3>Build a form and a view</h3>
+          <p class="lab-teaser">Tidy the main form and ship a shared filtered view.</p>
+        </span>
+        <span class="lab-duration">~15 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> The default form Dataverse generated for Renewal Reminder is fine, but the team wants a cleaner layout and a shared view filtered to open reminders.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Lab F2 completed.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Tidy the main form</div>
+          <ol class="step-list" data-lab="F3" data-ex="1">
+            <li><input type="checkbox" id="F3-1-1"><label for="F3-1-1">Open Renewal Reminder table → <strong>Forms</strong> → <strong>Information</strong> (main form).</label></li>
+            <li><input type="checkbox" id="F3-1-2"><label for="F3-1-2">Drag Status and Reminder Date to the top of the form; remove any unused fields Dataverse auto-added.</label></li>
+            <li><input type="checkbox" id="F3-1-3"><label for="F3-1-3">Save &amp; Publish.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Build a public view</div>
+          <ol class="step-list" data-lab="F3" data-ex="2">
+            <li><input type="checkbox" id="F3-2-1"><label for="F3-2-1"><strong>Views</strong> → <strong>+ New view</strong> → Public view, name it "Open Renewal Reminders."</label></li>
+            <li><input type="checkbox" id="F3-2-2"><label for="F3-2-2">Add columns: Reminder Date, Status, Account, Notes.</label></li>
+            <li><input type="checkbox" id="F3-2-3"><label for="F3-2-3">Filter: Status equals Pending. Sort by Reminder Date, ascending.</label></li>
+            <li><input type="checkbox" id="F3-2-4"><label for="F3-2-4">Save &amp; Publish.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout"><strong>Note:</strong> public views are shared with everyone who has table access; a personal view would only be visible to you &mdash; see Foundations Module 4 for the distinction.</div>
+
+        <div class="callout success"><strong>Success check:</strong> opening the "Open Renewal Reminders" view shows only Pending reminders, sorted soonest-first.</div>
+
+        <a class="module-link" href="d365-crm-onboarding-guide.html#module-4" target="_blank" rel="noopener">Related reading: Foundations Module 4 &middot; Working with forms &amp; views →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="F3"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="F3"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB F4 -->
+    <details class="lab-card foundations" data-lab-id="F4" data-track="foundations">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab F4</span>
+        <span class="lab-summary-text">
+          <h3>Automate a rule with a business rule</h3>
+          <p class="lab-teaser">Require an explanation whenever a reminder is dismissed &mdash; no code.</p>
+        </span>
+        <span class="lab-duration">~15 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> When someone sets a reminder's Status to Dismissed, the team wants a short explanation required in Notes &mdash; enforced without code, both on the form and on the server.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Lab F2 completed.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Build the rule</div>
+          <ol class="step-list" data-lab="F4" data-ex="1">
+            <li><input type="checkbox" id="F4-1-1"><label for="F4-1-1">Renewal Reminder table → <strong>Business rules</strong> → <strong>+ New business rule</strong>.</label></li>
+            <li><input type="checkbox" id="F4-1-2"><label for="F4-1-2">Set the rule's scope to <strong>Entity</strong> (not just this form) so it also runs server-side.</label></li>
+            <li><input type="checkbox" id="F4-1-3"><label for="F4-1-3">Condition: Status equals Dismissed.</label></li>
+            <li><input type="checkbox" id="F4-1-4"><label for="F4-1-4">Action (when true): set field requirement → Notes → Business required. Add an else action: Notes → Not required.</label></li>
+            <li><input type="checkbox" id="F4-1-5"><label for="F4-1-5">Save &amp; Activate.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Test it</div>
+          <ol class="step-list" data-lab="F4" data-ex="2">
+            <li><input type="checkbox" id="F4-2-1"><label for="F4-2-1">Open a Renewal Reminder record, set Status to Dismissed, leave Notes blank, try to Save.</label></li>
+            <li><input type="checkbox" id="F4-2-2"><label for="F4-2-2">Confirm Dataverse blocks the save and highlights Notes as required.</label></li>
+            <li><input type="checkbox" id="F4-2-3"><label for="F4-2-3">Switch Status back to Pending and confirm the requirement disappears.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout"><strong>Tip:</strong> scoping the rule to "Entity" instead of just this form is what makes it apply no matter how the record is changed &mdash; a flow, an import, or the API all get the same enforcement. That's Foundations Module 5's core lesson about business rules.</div>
+
+        <div class="callout success"><strong>Success check:</strong> setting Status to Dismissed makes Notes required; switching back to Pending removes the requirement.</div>
+
+        <a class="module-link" href="d365-crm-onboarding-guide.html#module-5" target="_blank" rel="noopener">Related reading: Foundations Module 5 &middot; Business rules &amp; business process flows →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="F4"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="F4"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB F5 -->
+    <details class="lab-card foundations" data-lab-id="F5" data-track="foundations">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab F5</span>
+        <span class="lab-summary-text">
+          <h3>Your first client script</h3>
+          <p class="lab-teaser">Warn the user in-form when a reminder is overdue.</p>
+        </span>
+        <span class="lab-duration">~20 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Warn the user the moment they open a reminder whose date is in the past, using a namespaced JavaScript web resource &mdash; a good first practice for Foundations Module 6's script-vs-plugin distinction.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Lab F2 completed.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Write the script</div>
+          <div class="code-block">
+            <div class="code-label">JavaScript &middot; web resource</div>
+            <pre><code>var Contoso = window.Contoso || {};
+(function () {
+    this.RenewalReminder = this.RenewalReminder || {};
+    this.RenewalReminder.formEvents = {
+        onLoad: function (executionContext) {
+            var formContext = executionContext.getFormContext();
+            var dateAttr = formContext.getAttribute("oh_reminderdate");
+            var statusAttr = formContext.getAttribute("oh_status");
+            if (!dateAttr || !statusAttr) return;
+
+            var reminderDate = dateAttr.getValue();
+            var isPending = statusAttr.getValue() === 100000000; // Pending
+            if (reminderDate && isPending && reminderDate < new Date()) {
+                formContext.ui.setFormNotification(
+                    "This reminder's date has already passed.",
+                    "WARNING",
+                    "overdueReminder"
+                );
+            }
+        }
+    };
+}).call(Contoso);</code></pre>
+          </div>
+          <ol class="step-list" data-lab="F5" data-ex="1">
+            <li><input type="checkbox" id="F5-1-1"><label for="F5-1-1">Adjust the two attribute logical names and the Pending option value to match your own Status choice column.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Upload as a web resource</div>
+          <ol class="step-list" data-lab="F5" data-ex="2">
+            <li><input type="checkbox" id="F5-2-1"><label for="F5-2-1">In your solution: <strong>+ New</strong> → <strong>Web resource</strong>, type JavaScript, name it with your prefix (e.g. <code>oh_RenewalReminder.js</code>).</label></li>
+            <li><input type="checkbox" id="F5-2-2"><label for="F5-2-2">Paste the script, Save, then Publish.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Wire it to the form</div>
+          <ol class="step-list" data-lab="F5" data-ex="3">
+            <li><input type="checkbox" id="F5-3-1"><label for="F5-3-1">Open the Renewal Reminder main form → Form properties / Events → add the library you just uploaded.</label></li>
+            <li><input type="checkbox" id="F5-3-2"><label for="F5-3-2">Add an OnLoad event → Function: <code>Contoso.RenewalReminder.formEvents.onLoad</code> → check "Pass execution context as first parameter."</label></li>
+            <li><input type="checkbox" id="F5-3-3"><label for="F5-3-3">Save &amp; Publish.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 4 &middot; Test</div>
+          <ol class="step-list" data-lab="F5" data-ex="4">
+            <li><input type="checkbox" id="F5-4-1"><label for="F5-4-1">Open a record with a past Reminder Date and Status Pending &mdash; confirm the warning banner appears.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout"><strong>Tip:</strong> this is exactly the kind of rule that belongs client-side, not in a plugin &mdash; it's UX polish, not something that must hold true no matter how the record changed. See Foundations Module 6 for that distinction.</div>
+
+        <div class="callout success"><strong>Success check:</strong> opening an overdue, still-Pending reminder shows a yellow form notification; a non-overdue one doesn't.</div>
+
+        <a class="module-link" href="d365-crm-onboarding-guide.html#module-6" target="_blank" rel="noopener">Related reading: Foundations Module 6 &middot; Scripts vs. plugins →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="F5"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="F5"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB F6 -->
+    <details class="lab-card foundations" data-lab-id="F6" data-track="foundations">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab F6</span>
+        <span class="lab-summary-text">
+          <h3>Automate with Power Automate</h3>
+          <p class="lab-teaser">Send a notification automatically when a reminder is sent.</p>
+        </span>
+        <span class="lab-duration">~20 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Whenever a Renewal Reminder's Status changes to Sent, Contoso wants a notification email logged automatically &mdash; your first taste of Power Automate driven off Dataverse.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Lab F2 completed. Office 365 Outlook connector access (or swap for any connector you have).</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Build the flow</div>
+          <ol class="step-list" data-lab="F6" data-ex="1">
+            <li><input type="checkbox" id="F6-1-1"><label for="F6-1-1">Go to <code>make.powerautomate.com</code> → <strong>+ Create</strong> → <strong>Automated cloud flow</strong>.</label></li>
+            <li><input type="checkbox" id="F6-1-2"><label for="F6-1-2">Trigger: Dataverse "When a row is added, modified or deleted" &mdash; table: Renewal Reminder, change type: Modified, scope: Organization, filtering columns: your Status column.</label></li>
+            <li><input type="checkbox" id="F6-1-3"><label for="F6-1-3">Add a <strong>Condition</strong> action: check that the new Status value equals "Sent."</label></li>
+            <li><input type="checkbox" id="F6-1-4"><label for="F6-1-4">In the "if yes" branch, add "Send an email (V2)" to yourself with dynamic content from the trigger.</label></li>
+            <li><input type="checkbox" id="F6-1-5"><label for="F6-1-5">Save, and confirm the flow is turned on.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Test</div>
+          <ol class="step-list" data-lab="F6" data-ex="2">
+            <li><input type="checkbox" id="F6-2-1"><label for="F6-2-1">Open a Renewal Reminder record, set Status to Sent, Save.</label></li>
+            <li><input type="checkbox" id="F6-2-2"><label for="F6-2-2">Check the flow's run history &mdash; confirm a successful run and that the email arrived.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout"><strong>Tip:</strong> the trigger fires on <em>any</em> change to the filtered column, not specifically a change to "Sent" &mdash; that's why the Condition action matters. Skipping it means the flow fires (and potentially emails) on every status change. This exact gap is what Advanced Lab A2 hardens further.</div>
+
+        <div class="callout success"><strong>Success check:</strong> changing Status to Sent triggers exactly one successful flow run and one email.</div>
+
+        <a class="module-link" href="d365-crm-onboarding-guide.html#module-9" target="_blank" rel="noopener">Related reading: Foundations Module 9 &middot; Power Automate essentials →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="F6"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="F6"></span>
+        </div>
+      </div>
+    </details>
+
+  </div>
+
+  <!-- ================= ADVANCED TRACK ================= -->
+  <div class="track-heading" data-track-heading="advanced">
+    <h2>Advanced Topics track</h2>
+    <div class="dash"></div>
+  </div>
+
+  <div class="lab-grid">
+
+    <!-- LAB A1 -->
+    <details class="lab-card advanced" data-lab-id="A1" data-track="advanced">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab A1</span>
+        <span class="lab-summary-text">
+          <h3>Build and call a Custom API</h3>
+          <p class="lab-teaser">Turn "mark a reminder Sent" into a reusable, callable message.</p>
+        </span>
+        <span class="lab-duration">~25 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Turn the "mark a reminder as Sent" idea into a reusable Custom API that other things &mdash; flows, scripts, external apps &mdash; can call, matching Advanced Module 1's "put the logic in exactly one place" design tip.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Foundations Lab F2 (or any custom table you own). The plugin-wiring exercise is optional and assumes basic C# familiarity.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Define the Custom API</div>
+          <ol class="step-list" data-lab="A1" data-ex="1">
+            <li><input type="checkbox" id="A1-1-1"><label for="A1-1-1">In your solution: <strong>+ New</strong> → <strong>Automation</strong> → <strong>Custom API</strong>.</label></li>
+            <li><input type="checkbox" id="A1-1-2"><label for="A1-1-2">Unique name: <code>oh_MarkReminderSent</code> (your prefix). Bind it to Renewal Reminder.</label></li>
+            <li><input type="checkbox" id="A1-1-3"><label for="A1-1-3">Under Response Properties, add <code>Success</code> (Boolean).</label></li>
+            <li><input type="checkbox" id="A1-1-4"><label for="A1-1-4">Save.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Wire it to real logic (optional)</div>
+          <ol class="step-list" data-lab="A1" data-ex="2">
+            <li><input type="checkbox" id="A1-2-1"><label for="A1-2-1">If you have a plugin dev environment set up, register a plugin class against the <code>oh_MarkReminderSent</code> message that reads the Target, sets Status to Sent, and returns <code>Success = true</code>.</label></li>
+            <li><input type="checkbox" id="A1-2-2"><label for="A1-2-2">If not, skip to Exercise 3 &mdash; the definition alone is still worth inspecting.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Call it from the browser console</div>
+          <div class="code-block">
+            <div class="code-label">JavaScript &middot; browser dev tools console</div>
+            <pre><code>var request = {
+    getMetadata: function () {
+        return {
+            boundParameter: "entity",
+            parameterTypes: {
+                entity: { typeName: "mscrm.oh_renewalreminder", structuralProperty: 5 }
+            },
+            operationType: 0,
+            operationName: "oh_MarkReminderSent"
+        };
+    },
+    entity: { entityType: "oh_renewalreminder", id: Xrm.Page.data.entity.getId() }
+};
+Xrm.WebApi.online.execute(request).then(function (r) {
+    return r.json();
+}).then(console.log);</code></pre>
+          </div>
+          <ol class="step-list" data-lab="A1" data-ex="3">
+            <li><input type="checkbox" id="A1-3-1"><label for="A1-3-1">Open a Renewal Reminder record, open dev tools console, and run the snippet above (adjust entity logical name and id if needed).</label></li>
+            <li><input type="checkbox" id="A1-3-2"><label for="A1-3-2">Confirm it returns a response instead of erroring with a 404 &mdash; that proves the message is reachable, even before a plugin is wired up.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> the Custom API shows up in your solution's Objects list as type "API," and calling it from the console returns a response.</div>
+
+        <a class="module-link" href="d365-crm-advanced-topics-guide.html#module-1" target="_blank" rel="noopener">Related reading: Advanced Module 1 &middot; Custom actions &amp; APIs →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="A1"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="A1"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB A2 -->
+    <details class="lab-card advanced" data-lab-id="A2" data-track="advanced">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab A2</span>
+        <span class="lab-summary-text">
+          <h3>Harden a flow with error handling</h3>
+          <p class="lab-teaser">Make Lab F6's flow fail gracefully instead of silently.</p>
+        </span>
+        <span class="lab-duration">~15 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Take the flow from Foundations Lab F6 and make it resilient: log a failure instead of silently dying if the email step fails.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Foundations Lab F6 completed.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Wrap the risky step in a Scope</div>
+          <ol class="step-list" data-lab="A2" data-ex="1">
+            <li><input type="checkbox" id="A2-1-1"><label for="A2-1-1">Open the flow from Lab F6 in edit mode.</label></li>
+            <li><input type="checkbox" id="A2-1-2"><label for="A2-1-2">Add a <strong>Scope</strong> action, drag the "Send an email" step inside it, and rename the Scope to "Send notification."</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Add a failure branch</div>
+          <ol class="step-list" data-lab="A2" data-ex="2">
+            <li><input type="checkbox" id="A2-2-1"><label for="A2-2-1">Add a new action after the Scope (e.g. a <strong>Compose</strong> action capturing <code>result('Send_notification')</code>).</label></li>
+            <li><input type="checkbox" id="A2-2-2"><label for="A2-2-2">Open its <strong>Configure run after</strong> settings and check "has failed" and "has timed out"; uncheck "is successful."</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Test it deliberately</div>
+          <ol class="step-list" data-lab="A2" data-ex="3">
+            <li><input type="checkbox" id="A2-3-1"><label for="A2-3-1">Temporarily break the email step (e.g. an invalid recipient), trigger the flow, and confirm the failure branch runs.</label></li>
+            <li><input type="checkbox" id="A2-3-2"><label for="A2-3-2">Check Run History &mdash; the run should show as a handled failure, not a dead end.</label></li>
+            <li><input type="checkbox" id="A2-3-3"><label for="A2-3-3">Revert the deliberate breakage.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> a deliberately broken run still completes, with your failure-branch action visibly executing in Run History.</div>
+
+        <a class="module-link" href="d365-crm-advanced-topics-guide.html#module-2" target="_blank" rel="noopener">Related reading: Advanced Module 2 &middot; Power Automate deep dive →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="A2"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="A2"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB A3 -->
+    <details class="lab-card advanced" data-lab-id="A3" data-track="advanced">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab A3</span>
+        <span class="lab-summary-text">
+          <h3>Refactor a script to modern best practice</h3>
+          <p class="lab-teaser">Audit Lab F5's script against a real checklist.</p>
+        </span>
+        <span class="lab-duration">~15 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> The script from Foundations Lab F5 works, but audit it against Advanced Module 3's best-practice checklist and fix whatever's missing.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Foundations Lab F5 completed.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Audit against the checklist</div>
+          <ol class="step-list" data-lab="A3" data-ex="1">
+            <li><input type="checkbox" id="A3-1-1"><label for="A3-1-1">Is the function namespaced (e.g. <code>Contoso.RenewalReminder.formEvents</code>), not a bare global name?</label></li>
+            <li><input type="checkbox" id="A3-1-2"><label for="A3-1-2">Does it use <code>formContext</code> from <code>executionContext</code>, never the global <code>Xrm.Page</code>?</label></li>
+            <li><input type="checkbox" id="A3-1-3"><label for="A3-1-3">Does it null-check the date attribute before comparing, instead of assuming it's always set?</label></li>
+            <li><input type="checkbox" id="A3-1-4"><label for="A3-1-4">Are there any hardcoded GUIDs, option values, or environment URLs that should move to a constant or environment variable?</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Fix what's missing</div>
+          <ol class="step-list" data-lab="A3" data-ex="2">
+            <li><input type="checkbox" id="A3-2-1"><label for="A3-2-1">If a null check is missing on the date attribute, add one and return early instead of throwing.</label></li>
+            <li><input type="checkbox" id="A3-2-2"><label for="A3-2-2">Move any hardcoded option-set values into a named constant at the top of the file.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Re-test</div>
+          <ol class="step-list" data-lab="A3" data-ex="3">
+            <li><input type="checkbox" id="A3-3-1"><label for="A3-3-1">Republish the web resource.</label></li>
+            <li><input type="checkbox" id="A3-3-2"><label for="A3-3-2">Open a Reminder with no date set at all &mdash; confirm no console error.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> no console errors on a record with a blank Reminder Date; the script bails out cleanly instead of throwing.</div>
+
+        <a class="module-link" href="d365-crm-advanced-topics-guide.html#module-3" target="_blank" rel="noopener">Related reading: Advanced Module 3 &middot; Advanced customization →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="A3"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="A3"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB A4 -->
+    <details class="lab-card advanced" data-lab-id="A4" data-track="advanced">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab A4</span>
+        <span class="lab-summary-text">
+          <h3>Configure the security model</h3>
+          <p class="lab-teaser">Scope a new business unit and role to Business Unit-level access.</p>
+        </span>
+        <span class="lab-duration">~20 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Contoso is adding a "Regional Sales" business unit. Build the access model so regional reps see only their own team's reminders.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Foundations Lab F2 completed. Environment admin access.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Create the business unit</div>
+          <ol class="step-list" data-lab="A4" data-ex="1">
+            <li><input type="checkbox" id="A4-1-1"><label for="A4-1-1">Power Platform admin center → your environment → Settings → Users + permissions → <strong>Business units</strong>.</label></li>
+            <li><input type="checkbox" id="A4-1-2"><label for="A4-1-2">+ New business unit, name "Regional Sales," parent: the root business unit.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Create a security role</div>
+          <ol class="step-list" data-lab="A4" data-ex="2">
+            <li><input type="checkbox" id="A4-2-1"><label for="A4-2-1"><strong>Security roles</strong> → + New role, name "Regional Sales Rep," business unit: Regional Sales.</label></li>
+            <li><input type="checkbox" id="A4-2-2"><label for="A4-2-2">On the Custom Entities tab, find Renewal Reminder and set Read/Write/Create/Append to <strong>Business Unit</strong> level (not User, not Organization).</label></li>
+            <li><input type="checkbox" id="A4-2-3"><label for="A4-2-3">Save.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Confirm the boundary</div>
+          <ol class="step-list" data-lab="A4" data-ex="3">
+            <li><input type="checkbox" id="A4-3-1"><label for="A4-3-1">If you have a second test user, add them to Regional Sales and assign the new role; confirm they see teammates' reminders but not ones owned by other business units.</label></li>
+            <li><input type="checkbox" id="A4-3-2"><label for="A4-3-2">If not, write down what access level you'd change to if a manager also needed to see child business units. (Answer: Parent: Child Business Units.)</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> the "Regional Sales Rep" role exists, scoped to the Regional Sales business unit, with Business Unit-level access on Renewal Reminder.</div>
+
+        <a class="module-link" href="d365-crm-advanced-topics-guide.html#module-4" target="_blank" rel="noopener">Related reading: Advanced Module 4 &middot; Security model in practice →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="A4"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="A4"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB A5 -->
+    <details class="lab-card advanced" data-lab-id="A5" data-track="advanced">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab A5</span>
+        <span class="lab-summary-text">
+          <h3>Query data with the Web API and FetchXML</h3>
+          <p class="lab-teaser">Pull the same overdue-reminder count two different ways.</p>
+        </span>
+        <span class="lab-duration">~15 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Contoso's ops team wants a quick count of overdue reminders without opening the app. Get comfortable pulling data both ways: OData and FetchXML.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Foundations Lab F2 completed. Your environment's Instance URL from Lab F1.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Web API in the browser console</div>
+          <div class="code-block">
+            <div class="code-label">JavaScript &middot; browser dev tools console, from any Dataverse page</div>
+            <pre><code>fetch("/api/data/v9.2/oh_renewalreminders?$select=oh_name&$filter=oh_status eq 100000003&$count=true", {
+    headers: { "OData-MaxVersion": "4.0", "OData-Version": "4.0", "Accept": "application/json" }
+}).then(r => r.json()).then(console.log);</code></pre>
+          </div>
+          <ol class="step-list" data-lab="A5" data-ex="1">
+            <li><input type="checkbox" id="A5-1-1"><label for="A5-1-1">Adjust the table's logical name (plural) and the Overdue option value to match your own table, then run the snippet.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; The same query as FetchXML</div>
+          <div class="code-block">
+            <div class="code-label">FetchXML</div>
+            <pre><code>&lt;fetch aggregate="true"&gt;
+  &lt;entity name="oh_renewalreminder"&gt;
+    &lt;attribute name="oh_renewalreminderid" alias="count" aggregate="count" /&gt;
+    &lt;filter&gt;
+      &lt;condition attribute="oh_status" operator="eq" value="100000003" /&gt;
+    &lt;/filter&gt;
+  &lt;/entity&gt;
+&lt;/fetch&gt;</code></pre>
+          </div>
+          <ol class="step-list" data-lab="A5" data-ex="2">
+            <li><input type="checkbox" id="A5-2-1"><label for="A5-2-1">Run this via Advanced Find → Download Fetch XML → paste-and-modify, or a tool like XrmToolBox's FetchXML Builder if you have it installed.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Compare</div>
+          <ol class="step-list" data-lab="A5" data-ex="3">
+            <li><input type="checkbox" id="A5-3-1"><label for="A5-3-1">Note one thing OData did more concisely, and one thing FetchXML's aggregation made easier.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> both queries return the same overdue-reminder count.</div>
+
+        <a class="module-link" href="d365-crm-advanced-topics-guide.html#module-5" target="_blank" rel="noopener">Related reading: Advanced Module 5 &middot; Data integration &amp; migration →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="A5"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="A5"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB A6 -->
+    <details class="lab-card advanced" data-lab-id="A6" data-track="advanced">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab A6</span>
+        <span class="lab-summary-text">
+          <h3>Monitor, trace, and check your solution's health</h3>
+          <p class="lab-teaser">Build the habit of checking the exhaust before calling it done.</p>
+        </span>
+        <span class="lab-duration">~15 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Before calling any of this work "done," build the habit of checking the exhaust: trace logs, run history, and the Solution Checker.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Labs F6 and (optionally) A1 completed. Environment admin access for the trace log setting.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Turn on plugin tracing</div>
+          <ol class="step-list" data-lab="A6" data-ex="1">
+            <li><input type="checkbox" id="A6-1-1"><label for="A6-1-1">Settings → Administration → System Settings → Customization tab → Enable logging to plug-in trace log → <strong>All</strong>.</label></li>
+            <li><input type="checkbox" id="A6-1-2"><label for="A6-1-2">If you registered a plugin in Lab A1, trigger it once, then check Settings → Plug-in Trace Log for an entry.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; Review flow run history</div>
+          <ol class="step-list" data-lab="A6" data-ex="2">
+            <li><input type="checkbox" id="A6-2-1"><label for="A6-2-1">Open the flow from Lab F6/A2 → Run history → open the most recent run.</label></li>
+            <li><input type="checkbox" id="A6-2-2"><label for="A6-2-2">Confirm you can explain, for that run, exactly which action ran, in what order, and how long each took.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; Run Solution Checker</div>
+          <ol class="step-list" data-lab="A6" data-ex="3">
+            <li><input type="checkbox" id="A6-3-1"><label for="A6-3-1">In the maker portal, open "Contoso CRM Customizations" → <strong>Solution checker</strong> → Run checker.</label></li>
+            <li><input type="checkbox" id="A6-3-2"><label for="A6-3-2">Review the findings; note whether each is informational or needs a fix.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> you've located the plugin trace log, read a flow's run history end to end, and produced at least one Solution Checker report.</div>
+
+        <a class="module-link" href="d365-crm-advanced-topics-guide.html#module-6" target="_blank" rel="noopener">Related reading: Advanced Module 6 &middot; Monitoring, debugging &amp; performance →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="A6"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="A6"></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- LAB A7 -->
+    <details class="lab-card advanced" data-lab-id="A7" data-track="advanced">
+      <summary class="lab-summary">
+        <span class="lab-id">Lab A7</span>
+        <span class="lab-summary-text">
+          <h3>Ship it: promote your solution</h3>
+          <p class="lab-teaser">Package everything you built and (optionally) move it for real.</p>
+        </span>
+        <span class="lab-duration">~20 min</span>
+        <span class="lab-done-badge">✓ Done</span>
+        <span class="lab-chevron">›</span>
+      </summary>
+      <div class="lab-body">
+        <div class="scenario-box"><strong>Scenario:</strong> Every lab so far has been building inside one unmanaged solution in a single dev environment. Close the loop: package it and, if you have a second environment, actually move it.</div>
+        <h4>Prerequisites</h4>
+        <p class="prereq-list">Any of the earlier labs completed. A second environment is optional, not required.</p>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 1 &middot; Bump the version and export</div>
+          <ol class="step-list" data-lab="A7" data-ex="1">
+            <li><input type="checkbox" id="A7-1-1"><label for="A7-1-1">Solutions → Contoso CRM Customizations → Details → bump the version (e.g. to 1.0.0.1).</label></li>
+            <li><input type="checkbox" id="A7-1-2"><label for="A7-1-2">Export → choose <strong>Managed</strong>.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 2 &middot; If you have a second environment, import it</div>
+          <ol class="step-list" data-lab="A7" data-ex="2">
+            <li><input type="checkbox" id="A7-2-1"><label for="A7-2-1">Switch to (or sign into) a second trial environment → Solutions → Import solution → upload the managed zip.</label></li>
+            <li><input type="checkbox" id="A7-2-2"><label for="A7-2-2">Walk through the wizard, confirming any connection references.</label></li>
+            <li><input type="checkbox" id="A7-2-3"><label for="A7-2-3">Open the imported solution &mdash; confirm it shows as Managed (locked) in the objects list, unlike your dev copy.</label></li>
+          </ol>
+        </div>
+
+        <div class="exercise">
+          <div class="exercise-title">Exercise 3 &middot; If you only have one environment</div>
+          <ol class="step-list" data-lab="A7" data-ex="3">
+            <li><input type="checkbox" id="A7-3-1"><label for="A7-3-1">Skip the import. Instead, write out what you'd check in the target environment's import job before calling the deployment done &mdash; dependency errors, disconnected flows, plugin config mismatches.</label></li>
+          </ol>
+        </div>
+
+        <div class="callout success"><strong>Success check:</strong> you have a managed .zip file on disk with a version number you deliberately chose, and either a live import to inspect or a written checklist of what you'd verify.</div>
+
+        <a class="module-link" href="d365-crm-advanced-topics-guide.html#module-7" target="_blank" rel="noopener">Related reading: Advanced Modules 7 &amp; 8 &middot; ALM and Solution lifecycle →</a>
+
+        <div class="lab-foot">
+          <label class="complete-check"><input type="checkbox" class="lab-checkbox" data-lab="A7"><span>Mark this lab complete</span></label>
+          <span class="lab-progress-mini" data-lab-progress="A7"></span>
+        </div>
+      </div>
+    </details>
+
+  </div>
+
+  <div class="reset-wrap">
+    <button class="ghost-btn" id="resetProgressBtn" type="button">Reset all progress</button>
+    <div class="reset-confirm hidden" id="resetConfirm">
+      <span>Clear every checkmark on this page? This can't be undone.</span>
+      <div class="reset-confirm-btns">
+        <button class="ghost-btn small" id="resetYes" type="button">Yes, reset</button>
+        <button class="ghost-btn small" id="resetNo" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>Built to turn the guides into real, hands-on practice.<br>Something not work in your environment? Flag it with whoever's maintaining this guide. &middot; <a href="index.html">Back to learning paths</a></p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var LAB_IDS = ['F1','F2','F3','F4','F5','F6','A1','A2','A3','A4','A5','A6','A7'];
+  var TOTAL_LABS = LAB_IDS.length;
+  var STORAGE_KEY = 'd365-crm-practice-labs-progress-v1';
+  var state = { labs: {}, steps: {} };
+  var previousCompleted = 0;
+  var isFirstApply = true;
+
+  function hasStorage(){
+    return typeof window.storage !== 'undefined' && window.storage !== null;
+  }
+
+  async function loadState(){
+    if (hasStorage()){
+      try{
+        var result = await window.storage.get(STORAGE_KEY, false);
+        if (result && result.value){
+          var parsed = JSON.parse(result.value);
+          state.labs = parsed.labs || {};
+          state.steps = parsed.steps || {};
+        }
+      }catch(e){ /* keep defaults */ }
+    }
+    applyStateToUI();
+  }
+
+  async function saveState(){
+    if (!hasStorage()) return;
+    try{
+      await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+    }catch(e){
+      console.warn('Could not save progress right now.', e);
+    }
+  }
+
+  function applyStateToUI(){
+    var completed = 0;
+    LAB_IDS.forEach(function(id){
+      var isDone = !!state.labs[id];
+      if (isDone) completed++;
+
+      var checkbox = document.querySelector('.lab-checkbox[data-lab="' + id + '"]');
+      if (checkbox) checkbox.checked = isDone;
+
+      var card = document.querySelector('.lab-card[data-lab-id="' + id + '"]');
+      if (card) card.classList.toggle('is-complete', isDone);
+
+      var miniLabel = document.querySelector('[data-lab-progress="' + id + '"]');
+      if (miniLabel){
+        var lists = document.querySelectorAll('.step-list[data-lab="' + id + '"]');
+        var total = 0, checked = 0;
+        lists.forEach(function(list){
+          list.querySelectorAll('input[type="checkbox"]').forEach(function(cb){
+            total++;
+            if (cb.checked) checked++;
+          });
+        });
+        miniLabel.textContent = total ? (checked + ' / ' + total + ' steps checked') : '';
+      }
+    });
+
+    Object.keys(state.steps).forEach(function(stepId){
+      var input = document.getElementById(stepId);
+      if (input){
+        input.checked = !!state.steps[stepId];
+        input.closest('li').classList.toggle('checked', input.checked);
+      }
+    });
+
+    updateProgressRing(completed);
+    if (!isFirstApply && completed === TOTAL_LABS && previousCompleted < TOTAL_LABS){
+      playCompletionSound();
+    }
+    previousCompleted = completed;
+    isFirstApply = false;
+  }
+
+  function playCompletionSound(){
+    try {
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      var ctx = new AudioContext();
+      var t = ctx.currentTime;
+      var osc1 = ctx.createOscillator();
+      var gain1 = ctx.createGain();
+      osc1.connect(gain1); gain1.connect(ctx.destination);
+      osc1.type = 'sine'; osc1.frequency.setValueAtTime(523.25, t);
+      gain1.gain.setValueAtTime(0.12, t); gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      osc1.start(t); osc1.stop(t + 0.4);
+      var osc2 = ctx.createOscillator();
+      var gain2 = ctx.createGain();
+      osc2.connect(gain2); gain2.connect(ctx.destination);
+      osc2.type = 'sine'; osc2.frequency.setValueAtTime(783.99, t + 0.12);
+      gain2.gain.setValueAtTime(0, t + 0.12); gain2.gain.linearRampToValueAtTime(0.12, t + 0.14);
+      gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+      osc2.start(t + 0.12); osc2.stop(t + 0.7);
+    } catch(e) { /* audio not available, ignore */ }
+  }
+
+  function updateProgressRing(completed){
+    var pct = Math.round((completed / TOTAL_LABS) * 100);
+    var circle = document.getElementById('progressRingFg');
+    var circumference = 2 * Math.PI * 52;
+    if (circle){
+      circle.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+    }
+    var label = document.getElementById('progressLabel');
+    if (label){
+      label.innerHTML = completed + ' / ' + TOTAL_LABS + ' labs &middot; ' + pct + '%<small>Saved automatically as you go</small>';
+    }
+    var banner = document.getElementById('completionBanner');
+    if (banner) banner.classList.toggle('hidden', completed < TOTAL_LABS);
+  }
+
+  document.addEventListener('change', function(e){
+    if (e.target.classList && e.target.classList.contains('lab-checkbox')){
+      var id = e.target.getAttribute('data-lab');
+      state.labs[id] = e.target.checked;
+      applyStateToUI();
+      saveState();
+    } else if (e.target.matches('.step-list input[type="checkbox"]')){
+      state.steps[e.target.id] = e.target.checked;
+      e.target.closest('li').classList.toggle('checked', e.target.checked);
+      var listEl = e.target.closest('.step-list');
+      var labId = listEl ? listEl.getAttribute('data-lab') : null;
+      if (labId){
+        var miniLabel = document.querySelector('[data-lab-progress="' + labId + '"]');
+        if (miniLabel){
+          var lists = document.querySelectorAll('.step-list[data-lab="' + labId + '"]');
+          var total = 0, checked = 0;
+          lists.forEach(function(list){
+            list.querySelectorAll('input[type="checkbox"]').forEach(function(cb){
+              total++;
+              if (cb.checked) checked++;
+            });
+          });
+          miniLabel.textContent = total ? (checked + ' / ' + total + ' steps checked') : '';
+        }
+      }
+      saveState();
+    }
+  });
+
+  // ---- reset ----
+  var resetBtn = document.getElementById('resetProgressBtn');
+  var resetConfirm = document.getElementById('resetConfirm');
+  var resetYes = document.getElementById('resetYes');
+  var resetNo = document.getElementById('resetNo');
+  if (resetBtn) resetBtn.addEventListener('click', function(){ resetConfirm.classList.remove('hidden'); });
+  if (resetNo) resetNo.addEventListener('click', function(){ resetConfirm.classList.add('hidden'); });
+  if (resetYes) resetYes.addEventListener('click', async function(){
+    state = { labs: {}, steps: {} };
+    await saveState();
+    applyStateToUI();
+    resetConfirm.classList.add('hidden');
+  });
+
+  // ---- filters ----
+  var chips = document.querySelectorAll('.chip[data-filter]');
+  var cards = document.querySelectorAll('.lab-card');
+  var headings = document.querySelectorAll('[data-track-heading]');
+  var labCount = document.getElementById('labCount');
+
+  function applyFilter(filter){
+    var visible = 0;
+    cards.forEach(function(card){
+      var show = (filter === 'all' || card.getAttribute('data-track') === filter);
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    headings.forEach(function(h){
+      var track = h.getAttribute('data-track-heading');
+      h.style.display = (filter === 'all' || filter === track) ? '' : 'none';
+    });
+    if (labCount) labCount.textContent = visible + ' of ' + TOTAL_LABS + ' labs shown';
+  }
+
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      this.classList.add('active');
+      applyFilter(this.getAttribute('data-filter'));
+    });
+  });
+  applyFilter('all');
+
+  loadState();
+})();
+</script>
+
+</body>
+</html>

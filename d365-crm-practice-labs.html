@@ -184,6 +184,15 @@
   .code-block pre{margin:0; padding:14px 16px; overflow-x:auto;}
   .code-block code{background:none; padding:0; color:#dce7ff; font-size:.8rem; line-height:1.55;}
 
+  .screenshot{
+    margin:14px 0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#f8f9fd;
+  }
+  .screenshot img{width:100%; display:block;}
+  .screenshot figcaption{
+    padding:9px 14px; font-size:.78rem; color:var(--muted); border-top:1px solid var(--line); background:#fff;
+  }
+  .screenshot figcaption strong{color:var(--navy-2);}
+
   .lab-foot{
     margin-top:20px; padding-top:16px; border-top:1px solid var(--line);
     display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
@@ -254,6 +263,7 @@
     <h2>How these labs work</h2>
     <p>Each lab is self-contained but they build on each other loosely within a track &mdash; Foundations labs assume you completed the ones before them; Advanced labs assume the Foundations track (or equivalent comfort) plus, where noted, an earlier Advanced lab. Every lab needs a real Power Platform environment: a free <a href="https://make.powerapps.com" target="_blank" rel="noopener">Developer Plan</a> or trial works fine &mdash; nothing here needs production access, and several labs suggest a second environment as optional rather than required.</p>
     <p>Click a lab to expand it. Check off steps as you go &mdash; your checkmarks are saved automatically. Each lab ends with a <strong>Success check</strong> and a "mark this lab complete" box that feeds the progress ring above.</p>
+    <p>Where a screenshot appears, it's a genuine screenshot from Microsoft's official <a href="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/" target="_blank" rel="noopener">PL-200 training materials</a> &mdash; it shows the real designer/dialog you'll be using, but from Microsoft's own practice scenario, so the table and field names in the image won't match "Renewal Reminder." Treat every screenshot as "here's the screen you're looking for," not "here's exactly what yours should say." A handful of labs (client scripting, Custom APIs, Web API queries, Solution Checker) have no matching screenshot in that library and are left text-only rather than illustrated with something misleading.</p>
   </section>
 
   <div class="filter-bar">
@@ -295,6 +305,10 @@
             <li><input type="checkbox" id="F1-1-2"><label for="F1-1-2">Open the environment picker (top-right) and note the environment name and region.</label></li>
             <li><input type="checkbox" id="F1-1-3"><label for="F1-1-3">Open Settings (gear icon) → <strong>Session details</strong> and record the <strong>Instance URL</strong> &mdash; you'll need it for Advanced Lab A5's API calls.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/environments-all-dev-one.png" alt="The environment picker in the Power Apps maker portal, listing available environments." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; the environment picker looks like this regardless of what you name yours.</figcaption>
+          </figure>
         </div>
 
         <div class="callout"><strong>Tip:</strong> if you have access to more than one environment, always double-check you're in the right one before customizing anything &mdash; building in the wrong environment is the single most common rookie mistake.</div>
@@ -306,6 +320,10 @@
             <li><input type="checkbox" id="F1-2-2"><label for="F1-2-2">Under Publisher, click <strong>+ New publisher</strong>. Set Display name to your initials + "Contoso" (e.g. "OH Contoso"); set a short, unique Prefix (e.g. <code>oh</code>).</label></li>
             <li><input type="checkbox" id="F1-2-3"><label for="F1-2-3">Save the publisher, then set your solution's Display name to <strong>Contoso CRM Customizations</strong>, pick the publisher you just created, and Save.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/new-publisher.png" alt="The New publisher dialog in the Power Apps maker portal, showing Display name, Name, and Prefix fields." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; your Display name and Prefix values will be your own, not what's shown here.</figcaption>
+          </figure>
         </div>
 
         <div class="callout"><strong>Note:</strong> every custom component you build from here on should go inside this one solution &mdash; see Foundations Module 1 for why unmanaged solutions matter.</div>
@@ -362,6 +380,10 @@
             <li><input type="checkbox" id="F2-2-2"><label for="F2-2-2">Add: <strong>Reminder Date</strong> (Date only), <strong>Notes</strong> (Multiple lines of text), <strong>Status</strong> (Choice: Pending / Sent / Dismissed).</label></li>
             <li><input type="checkbox" id="F2-2-3"><label for="F2-2-3">Save and publish each column.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/table-properties.png" alt="The table properties panel in the Power Apps maker portal." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; shown for a "Project" table there, but the columns/properties layout is identical for Renewal Reminder.</figcaption>
+          </figure>
         </div>
 
         <div class="exercise">
@@ -371,6 +393,10 @@
             <li><input type="checkbox" id="F2-3-2"><label for="F2-3-2">Related table: <strong>Account</strong>. This creates a lookup column on Renewal Reminder pointing at Account.</label></li>
             <li><input type="checkbox" id="F2-3-3"><label for="F2-3-3">Leave Behavior at the default (Referential) &mdash; no cascading delete &mdash; and Save.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/add-relationship.png" alt="The New relationship dialog in the Power Apps maker portal, showing relationship type and behavior options." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; the relationship dialog looks like this for any two tables, not just the ones pictured.</figcaption>
+          </figure>
         </div>
 
         <div class="callout"><strong>Tip:</strong> add the new lookup column to the Account form's "Renewal Reminders" subgrid so users can see reminders without leaving the Account &mdash; that's exactly what Foundations Module 4 calls a subgrid.</div>
@@ -410,6 +436,10 @@
             <li><input type="checkbox" id="F3-1-2"><label for="F3-1-2">Drag Status and Reminder Date to the top of the form; remove any unused fields Dataverse auto-added.</label></li>
             <li><input type="checkbox" id="F3-1-3"><label for="F3-1-3">Save &amp; Publish.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/form-view-change.png" alt="The form designer in the Power Apps maker portal, showing the desktop/tablet/phone view switcher." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; the form designer canvas and drag-to-reorder behavior is the same regardless of table.</figcaption>
+          </figure>
         </div>
 
         <div class="exercise">
@@ -420,6 +450,10 @@
             <li><input type="checkbox" id="F3-2-3"><label for="F3-2-3">Filter: Status equals Pending. Sort by Reminder Date, ascending.</label></li>
             <li><input type="checkbox" id="F3-2-4"><label for="F3-2-4">Save &amp; Publish.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/view-project-active-projects.png" alt="A filtered public view definition in the Power Apps maker portal, showing columns, filters, and sort order." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; shown for a different table/view, but the column, filter, and sort configuration areas are in the same place for any view.</figcaption>
+          </figure>
         </div>
 
         <div class="callout"><strong>Note:</strong> public views are shared with everyone who has table access; a personal view would only be visible to you &mdash; see Foundations Module 4 for the distinction.</div>
@@ -461,6 +495,10 @@
             <li><input type="checkbox" id="F4-1-4"><label for="F4-1-4">Action (when true): set field requirement → Notes → Business required. Add an else action: Notes → Not required.</label></li>
             <li><input type="checkbox" id="F4-1-5"><label for="F4-1-5">Save &amp; Activate.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/new-business-rule.png" alt="The business rule designer in the Power Apps maker portal, showing a condition and its resulting actions." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; the condition/action canvas is the same designer you'll use for the Dismissed/Notes rule.</figcaption>
+          </figure>
         </div>
 
         <div class="exercise">
@@ -597,6 +635,10 @@
             <li><input type="checkbox" id="F6-1-4"><label for="F6-1-4">In the "if yes" branch, add "Send an email (V2)" to yourself with dynamic content from the trigger.</label></li>
             <li><input type="checkbox" id="F6-1-5"><label for="F6-1-5">Save, and confirm the flow is turned on.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/flow-condition.png" alt="A Condition action in the Power Automate cloud flow designer." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; your Condition will check Status equals Sent instead of what's pictured, but the action shape is identical.</figcaption>
+          </figure>
         </div>
 
         <div class="exercise">
@@ -734,6 +776,10 @@ Xrm.WebApi.online.execute(request).then(function (r) {
             <li><input type="checkbox" id="A2-2-1"><label for="A2-2-1">Add a new action after the Scope (e.g. a <strong>Compose</strong> action capturing <code>result('Send_notification')</code>).</label></li>
             <li><input type="checkbox" id="A2-2-2"><label for="A2-2-2">Open its <strong>Configure run after</strong> settings and check "has failed" and "has timed out"; uncheck "is successful."</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/flow-error-handling.png" alt="A Scope action with a parallel failure branch, configured via Configure run after, in the Power Automate designer." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; this is exactly the Scope-plus-failure-branch pattern this exercise builds.</figcaption>
+          </figure>
         </div>
 
         <div class="exercise">
@@ -842,6 +888,10 @@ Xrm.WebApi.online.execute(request).then(function (r) {
             <li><input type="checkbox" id="A4-2-2"><label for="A4-2-2">On the Custom Entities tab, find Renewal Reminder and set Read/Write/Create/Append to <strong>Business Unit</strong> level (not User, not Organization).</label></li>
             <li><input type="checkbox" id="A4-2-3"><label for="A4-2-3">Save.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/security-role-custom-tables.png" alt="The security role editor's Custom Entities tab, showing access-level circles for each privilege per table." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; you'll find Renewal Reminder in this same list and click through the same access-level circles.</figcaption>
+          </figure>
         </div>
 
         <div class="exercise">
@@ -1013,6 +1063,14 @@ Xrm.WebApi.online.execute(request).then(function (r) {
             <li><input type="checkbox" id="A7-2-2"><label for="A7-2-2">Walk through the wizard, confirming any connection references.</label></li>
             <li><input type="checkbox" id="A7-2-3"><label for="A7-2-3">Open the imported solution &mdash; confirm it shows as Managed (locked) in the objects list, unlike your dev copy.</label></li>
           </ol>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/connections-for-solution.png" alt="The Import solution wizard's connections step, prompting to confirm or create connections for the target environment." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; this connections-confirmation step is exactly where a flow's connection reference gets remapped on import.</figcaption>
+          </figure>
+          <figure class="screenshot">
+            <img src="https://microsoftlearning.github.io/PL-200-Power-Platform-Functional-Consultant/Instructions/media/solution-imported.png" alt="A successfully imported solution shown in the maker portal's solutions list." loading="lazy">
+            <figcaption><strong>Reference screenshot</strong> from Microsoft's official PL-200 training materials &mdash; this is what a successful import looks like once it lands in the target environment.</figcaption>
+          </figure>
         </div>
 
         <div class="exercise">
